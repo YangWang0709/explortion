@@ -5537,3 +5537,61 @@ Stage 4A-6.11 uncertainty-aware lambda one-action pilot result:
   review the 6.11 uncertainty-aware visual package and choose BC dataset
   design/preparation or an explicitly approved short rollout. Do not jump
   directly to long rollout.
+
+Stage 4A-6.12 uncertainty-as-exploration-bonus decision pilot result:
+
+- Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a612_uncertainty_exploration_bonus_pilot`.
+- Added source:
+  `sim_explorer/run_stage4a612_uncertainty_exploration_bonus_pilot.py`
+  and
+  `sim_explorer/test_stage4a612_uncertainty_exploration_bonus_pilot.py`.
+- Scope:
+  decision-only offline pilot using existing Stage 4A-6.10a dense uncertainty
+  artifacts and Stage 4A-6.11 measured-valid candidate features. No Isaac,
+  capture, map_predict, SSCNet inference, action execution, rollout, second
+  action, third frame, long rollout, training, BC/IL/RL/GDPO/PPO, replay
+  buffer, policy checkpoint, prediction writeback, uncertainty writeback, or
+  prediction/uncertainty safety-use leakage occurred.
+- Formula sweep:
+  beta values `{2,4,8,16,32}` over uncertainty bonus modes `fraction`,
+  `entropy`, `low_margin`, and `composite`, with per-start minmax over
+  measured-valid candidates. `source_occ_free` remained separate from
+  uncertainty features.
+- Result:
+  `start_count=10`, `candidate_rows_loaded=469`,
+  `selected_action_records=10`, and
+  `action_execution_count_this_stage=0`.
+  Recommended formula is `uncertainty_bonus_composite_beta8`;
+  `recommended_beta=8`; `uncertainty_bonus_runtime_ready=true`.
+- Decision comparison:
+  recommended formula changed actions `6` vs measured-only, `1` vs lambda48,
+  and `1` vs the Stage 4A-6.11 confidence-gated primary.
+  Candidate-all-local count was `5`, the same as lambda48.
+- Selected uncertainty health:
+  selected confidence mean/min `0.8623173562170562 / 0.7047213040865384`,
+  entropy mean/max `0.20959808035924596 / 0.3686438927283654`, and margin
+  mean/min `0.8020552913679388 / 0.5739912766676682`.
+- Risk and quality:
+  `uncertainty_bonus_quality_audit.passed=true` and
+  `uncertainty_bonus_risk_audit.passed=true`; warnings `[]`; blockers `[]`.
+  Source USD, fixed USD, checkpoint, prior datasets, prior outputs, and source
+  observed_state were unchanged.
+- Main artifacts:
+  decision dataset
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a612_uncertainty_exploration_bonus_pilot/expert_decision_dataset_uncertainty_bonus.npz`,
+  HTML
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a612_uncertainty_exploration_bonus_pilot/uncertainty_bonus_index.html`,
+  and future short rollout sketch
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a612_uncertainty_exploration_bonus_pilot/future_short_rollout_with_uncertainty_bonus_sketch.md`
+  beginning with `DO NOT RUN IN STAGE 4A-6.12.`.
+- Validation:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a612_py_compile.log`,
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a612_uncertainty_exploration_bonus_pilot.log`,
+  and
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a612_uncertainty_exploration_bonus_pilot_test.log`.
+  Test reported `all_passed=true`.
+- Next faithful step:
+  review the 6.12 decision-only audit/visual package. If accepted, design an
+  explicitly approved short rollout using `uncertainty_bonus_composite_beta8`.
+  Do not jump directly to long rollout.

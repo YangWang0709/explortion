@@ -3,6 +3,46 @@ Updated: 2026-06-04
 
 Current:
 
+- Stage 4A-6.12 uncertainty-as-exploration-bonus decision pilot is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a612_uncertainty_exploration_bonus_pilot`.
+- Completed task:
+  offline uncertainty bonus beta sweep over existing Stage 4A-6.10a dense
+  uncertainty artifacts and Stage 4A-6.11 measured-valid candidate features.
+  Formulas tested: uncertainty bonus `fraction`, `entropy`, `low_margin`, and
+  `composite` with beta values `{2,4,8,16,32}`.
+- Counts:
+  `start_count=10`, `candidate_rows_loaded=469`,
+  `selected_action_records=10`, `action_execution_count_this_stage=0`,
+  `isaac_startup_count_this_stage=0`, `capture_count_this_stage=0`,
+  `map_predict_calls_this_stage=0`, `sscnet_inference_calls_this_stage=0`,
+  `second_action_count=0`, `third_frame_count=0`, `rollout_executed=false`,
+  and `training_executed=false`.
+- Recommendation:
+  `recommended_uncertainty_bonus_formula=uncertainty_bonus_composite_beta8`,
+  `recommended_beta=8`, and `uncertainty_bonus_runtime_ready=true`.
+- Decision summary:
+  action changed count is `6` vs measured-only, `1` vs lambda48, and `1` vs
+  Stage 4A-6.11 confidence-gated primary. Candidate-all-local count is `5`,
+  same as lambda48. Selected confidence/entropy/margin mean values are
+  `0.8623173562170562`, `0.20959808035924596`, and
+  `0.8020552913679388`.
+- Risk summary:
+  quality and risk audits passed with no warnings or blockers. Source USD,
+  fixed USD, checkpoint, source observed_state, and prior outputs were not
+  modified. `source_occ_free` stayed separate from uncertainty fields.
+- Key artifacts:
+  HTML
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a612_uncertainty_exploration_bonus_pilot/uncertainty_bonus_index.html`,
+  decision dataset
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a612_uncertainty_exploration_bonus_pilot/expert_decision_dataset_uncertainty_bonus.npz`,
+  and future sketch
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a612_uncertainty_exploration_bonus_pilot/future_short_rollout_with_uncertainty_bonus_sketch.md`.
+- Current recommended next task:
+  review the 6.12 decision-only visual/audit package. If accepted, design an
+  explicitly approved short rollout using `uncertainty_bonus_composite_beta8`.
+  Do not jump directly to long rollout.
+
 - Stage 4A-6.11 uncertainty-aware lambda one-action pilot is complete.
   Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a611_uncertainty_aware_lambda_one_action_pilot`.
