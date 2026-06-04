@@ -23,6 +23,8 @@ class SimPredictionLayer:
         occupied_prob: np.ndarray,
         free_prob: np.ndarray,
         valid: np.ndarray,
+        entropy_norm: np.ndarray | None = None,
+        margin: np.ndarray | None = None,
         source_npz: str | None = None,
     ):
         self.pred_class = np.asarray(pred_class, dtype=np.uint8)
@@ -30,10 +32,20 @@ class SimPredictionLayer:
         self.occupied_prob = np.asarray(occupied_prob, dtype=np.float32)
         self.free_prob = np.asarray(free_prob, dtype=np.float32)
         self.valid = np.asarray(valid, dtype=bool)
+        self.entropy_norm = np.zeros_like(self.confidence, dtype=np.float32) if entropy_norm is None else np.asarray(entropy_norm, dtype=np.float32)
+        self.margin = np.zeros_like(self.confidence, dtype=np.float32) if margin is None else np.asarray(margin, dtype=np.float32)
         self.source_npz = source_npz
         self._validate()
 
-        for array in (self.pred_class, self.confidence, self.occupied_prob, self.free_prob, self.valid):
+        for array in (
+            self.pred_class,
+            self.confidence,
+            self.occupied_prob,
+            self.free_prob,
+            self.valid,
+            self.entropy_norm,
+            self.margin,
+        ):
             array.setflags(write=False)
 
     @classmethod
@@ -58,11 +70,21 @@ class SimPredictionLayer:
                 occupied_prob=np.array(data["global_occupied_prob"]),
                 free_prob=np.array(data["global_free_prob"]),
                 valid=np.array(data["global_prediction_valid"]),
+                entropy_norm=np.array(data["global_entropy_norm"]) if "global_entropy_norm" in data.files else None,
+                margin=np.array(data["global_margin"]) if "global_margin" in data.files else None,
                 source_npz=str(prediction_path),
             )
 
     def _validate(self) -> None:
-        arrays = (self.pred_class, self.confidence, self.occupied_prob, self.free_prob, self.valid)
+        arrays = (
+            self.pred_class,
+            self.confidence,
+            self.occupied_prob,
+            self.free_prob,
+            self.valid,
+            self.entropy_norm,
+            self.margin,
+        )
         if any(array.shape == () for array in arrays):
             raise ValueError("Prediction arrays are required")
         if self.pred_class.ndim != 3:
@@ -74,6 +96,8 @@ class SimPredictionLayer:
             ("confidence", self.confidence),
             ("occupied_prob", self.occupied_prob),
             ("free_prob", self.free_prob),
+            ("entropy_norm", self.entropy_norm),
+            ("margin", self.margin),
         ):
             if not np.all(np.isfinite(array)):
                 raise ValueError(f"{name} contains non-finite values")
@@ -102,6 +126,12 @@ class SimPredictionLayer:
     def get_free_prob(self, index: tuple[int, int, int] | list[int] | np.ndarray) -> float:
         return float(self.free_prob[self._index(index)])
 
+    def get_entropy_norm(self, index: tuple[int, int, int] | list[int] | np.ndarray) -> float:
+        return float(self.entropy_norm[self._index(index)])
+
+    def get_margin(self, index: tuple[int, int, int] | list[int] | np.ndarray) -> float:
+        return float(self.margin[self._index(index)])
+
     def is_predicted(self, index: tuple[int, int, int] | list[int] | np.ndarray, tau: float = 0.1) -> bool:
         idx = self._index(index)
         return bool(self.valid[idx] and self.confidence[idx] >= float(tau))
@@ -129,4 +159,3 @@ class SimPredictionLayer:
     ) -> float:
         confidence = self.get_confidence(index)
         return confidence if self.is_predicted(index, tau=tau) else 0.0
-

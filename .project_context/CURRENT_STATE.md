@@ -3,6 +3,41 @@ Updated: 2026-06-04
 
 Current state:
 
+- Stage 4A-6.10a dense prediction uncertainty artifact regeneration is
+  complete and validated. Primary output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610a_dense_prediction_uncertainty_artifacts`.
+  Dense rerun audit output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610a_uncertainty_audit_rerun_dense`.
+- Input limited audit was Stage 4A-6.10
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610_prediction_uncertainty_offline_audit`.
+  The map_predict artifact-saving contract was updated so future prediction
+  calls can save compact dense uncertainty artifacts. Full `class_prob` remains
+  off by default.
+- Dense result:
+  `logical_frame_count=30`, `physical_map_predict_regeneration_calls=30`,
+  dense compact fields generated for all 30 frames, and
+  `candidate_uncertainty_rows=480`. Confidence/entropy/margin candidate means
+  are `0.8564193916817506`, `0.2142625541271021`, and
+  `0.7945013785113891`.
+- Dense audit readiness:
+  `candidate_level_uncertainty_ready=true` and
+  `uncertainty_aware_expert_pilot_ready=true`. Stage 4A-6.11 was not executed.
+  Source-occ-free vs uncertainty was computed in dense mode:
+  Stage 6.8/6.9 frame1 Pearson `0.037934232555910705`; Stage 6.9 frame2
+  Pearson `-0.109843280729622`. Branch-class uncertainty is now available;
+  dense frame2 `distinct_nonmeasured_branch` had mean uncertainty
+  `0.2738123838789761`, `local_jitter` `0.14163060652624285`, and
+  `same_as_measured` `0.07121249474585056`.
+- Safety stayed closed for Stage 4A-6.10a:
+  no Isaac startup, no capture, no action, no rollout, no long rollout, no
+  training, no BC/IL/RL/GDPO/PPO, no prediction writeback, and no source/fixed
+  USD, checkpoint, prior dataset, old 6.10 output, or observed_state
+  modification. Validation passed:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a610a_dense_uncertainty_artifacts_test.log`.
+- Recommended next:
+  Stage 4A-6.11 uncertainty-aware lambda pilot design, bounded one-action only,
+  not rollout. Do not jump to long rollout.
+
 - Stage 4A-6.10 prediction uncertainty offline audit is complete in
   `summary_only_limited` mode. Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610_prediction_uncertainty_offline_audit`.

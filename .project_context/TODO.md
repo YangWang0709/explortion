@@ -3,6 +3,40 @@ Updated: 2026-06-04
 
 Current:
 
+- Stage 4A-6.10a dense prediction uncertainty artifact regeneration is
+  complete. Dense artifact output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610a_dense_prediction_uncertainty_artifacts`.
+  Dense audit rerun output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610a_uncertainty_audit_rerun_dense`.
+- Completed task:
+  map_predict dense artifact-saving contract updated; dense compact
+  confidence, entropy_norm, margin, occupied_prob, free_prob, valid mask, and
+  predicted-unmeasured mask fields generated from existing 6.8/6.9 depth,
+  pose, camera, and observed_state files only.
+- Counts:
+  `logical_frame_count=30`, `physical_map_predict_regeneration_calls=30`,
+  dense artifacts `30`, candidate-visible uncertainty rows `480`.
+  Candidate confidence/entropy/margin means are `0.8564193916817506`,
+  `0.2142625541271021`, and `0.7945013785113891`.
+- Dense readiness:
+  `candidate_level_uncertainty_ready=true` and
+  `uncertainty_aware_expert_pilot_ready=true`. Stage 4A-6.11 is still
+  `not executed`.
+- Dense relationship summaries:
+  source_occ_free vs uncertainty Pearson is `0.037934232555910705` for Stage
+  6.8/6.9 frame1 and `-0.109843280729622` for Stage 6.9 frame2. Frame2 branch
+  mean uncertainty is `0.2738123838789761` for
+  `distinct_nonmeasured_branch`, `0.14163060652624285` for `local_jitter`, and
+  `0.07121249474585056` for `same_as_measured`.
+- Safety reminder:
+  Stage 4A-6.10a did not start Isaac, capture, execute actions, rollout, run
+  long rollout, train, run BC/IL/RL/GDPO/PPO, write prediction to observed
+  state, or modify source/fixed USD, checkpoint, prior 6.8/6.9 datasets, old
+  6.10 outputs, or source observed_state.
+- Current recommended next task:
+  Stage 4A-6.11 uncertainty-aware lambda pilot design, bounded one-action only,
+  not rollout. Do not jump to long rollout.
+
 - Stage 4A-6.10 prediction uncertainty offline audit is complete in
   `summary_only_limited` mode. Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610_prediction_uncertainty_offline_audit`.

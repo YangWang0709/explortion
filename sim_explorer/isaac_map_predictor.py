@@ -37,6 +37,12 @@ from run_isaac_map_predict_single import (
     save_global_prediction_layer,
     save_local_prediction,
 )
+from prediction_uncertainty_utils import (
+    dense_fields_from_aligned,
+    dense_stats,
+    save_dense_uncertainty_npz,
+    sha256_file,
+)
 from sim_paper_expert import UNKNOWN
 from sim_prediction_layer import SimPredictionLayer
 
@@ -116,6 +122,9 @@ class IsaacMapPredictor:
             logits_t = self.model(x_depth=depth_t, x_tsdf=None, p=position_t, x_rgb=None)
             class_prob_t = torch.softmax(logits_t, dim=1)
             confidence_t, pred_class_t = torch.max(class_prob_t, dim=1)
+            top2_t = torch.topk(class_prob_t, k=2, dim=1).values
+            margin_t = top2_t[:, 0] - top2_t[:, 1]
+            entropy_norm_t = -torch.sum(class_prob_t * torch.log(class_prob_t + 1.0e-8), dim=1) / np.log(NUM_CLASSES)
             free_prob_t = class_prob_t[:, FREE_CLASS_ID]
             occupied_prob_t = 1.0 - free_prob_t
         torch.cuda.synchronize(self.device)
@@ -125,6 +134,8 @@ class IsaacMapPredictor:
             "logits_shape": tuple(int(v) for v in logits_t.shape),
             "pred_class": pred_class_t.squeeze(0).detach().cpu().numpy().astype(np.uint8),
             "confidence": confidence_t.squeeze(0).detach().cpu().numpy().astype(np.float32),
+            "entropy_norm": entropy_norm_t.squeeze(0).detach().cpu().numpy().astype(np.float32),
+            "margin": margin_t.squeeze(0).detach().cpu().numpy().astype(np.float32),
             "free_prob": free_prob_t.squeeze(0).detach().cpu().numpy().astype(np.float32),
             "occupied_prob": occupied_prob_t.squeeze(0).detach().cpu().numpy().astype(np.float32),
             "device": str(self.device),
@@ -147,6 +158,8 @@ class IsaacMapPredictor:
         output_dir: str | Path,
         step: int,
         save_probs: bool = False,
+        save_dense_uncertainty_artifacts: bool = False,
+        save_compact_probability_fields: bool = True,
         save_viz: bool = False,
         observed_state_path: str | Path | None = None,
         depth_source: str | Path | None = None,
@@ -205,6 +218,8 @@ class IsaacMapPredictor:
             pose=pose,
             map_bounds=map_bounds,
             global_voxel_size=float(voxel_size),
+            entropy_norm=inference["entropy_norm"],
+            margin=inference["margin"],
             alignment_convention=self.alignment_convention,
         )
         global_prediction_path = save_global_prediction_layer(
@@ -221,6 +236,50 @@ class IsaacMapPredictor:
         predicted_occupied = valid_tau & (aligned["global_occupied_prob"] >= 0.5)
         predicted_unmeasured = valid_tau & (observed_state == UNKNOWN)
         observed_hash_after = sha256_array(observed_state)
+        dense_uncertainty_path = ""
+        dense_uncertainty_stats: dict[str, Any] = {}
+        if save_dense_uncertainty_artifacts:
+            dense_fields = dense_fields_from_aligned(
+                pred_class=aligned["global_pred_class"],
+                confidence=aligned["global_confidence"],
+                entropy_norm=aligned["global_entropy_norm"],
+                margin=aligned["global_margin"],
+                occupied_prob=aligned["global_occupied_prob"],
+                free_prob=aligned["global_free_prob"],
+                raw_valid_mask=aligned["global_prediction_valid"],
+                observed_state=observed_state,
+                tau=tau,
+            )
+            dense_uncertainty_stats = dense_stats(dense_fields, observed_state)
+            dense_uncertainty_path = str(output_path / f"dense_prediction_uncertainty_{int(step):03d}.npz")
+            save_dense_uncertainty_npz(
+                dense_uncertainty_path,
+                dense_fields,
+                {
+                    "stage": "Stage 4A map_predict dense uncertainty contract",
+                    "step": int(step),
+                    "shape": [int(v) for v in observed_state.shape],
+                    "voxel_size": float(voxel_size),
+                    "bounds": map_bounds,
+                    "alignment_convention": self.alignment_convention,
+                    "tau": tau,
+                    "checkpoint_sha256": sha256_file(self.checkpoint),
+                    "source_depth_sha256": sha256_file(depth_source) if depth_source is not None else None,
+                    "source_pose_sha256": sha256_file(pose_source) if pose_source is not None else None,
+                    "source_camera_info_sha256": sha256_file(camera_info_source) if camera_info_source is not None else None,
+                    "source_observed_state_sha256": sha256_file(observed_state_path)
+                    if observed_state_path is not None
+                    else observed_hash_before,
+                    "observed_reference_hash": observed_hash_before,
+                    "no_prediction_writeback": True,
+                    "prediction_valid_count": dense_uncertainty_stats["prediction_valid_count"],
+                    "predicted_unmeasured_count": dense_uncertainty_stats["predicted_unmeasured_count"],
+                    "predicted_occupied_count": dense_uncertainty_stats["predicted_occupied_count"],
+                    "source_occ_free_count": dense_uncertainty_stats["source_occ_free_count"],
+                    "full_class_prob_saved": bool(save_probs),
+                    "save_compact_probability_fields": bool(save_compact_probability_fields),
+                },
+            )
 
         summary = {
             "stage": "Stage 4A-6 dynamic read-only map_predict step",
@@ -247,6 +306,8 @@ class IsaacMapPredictor:
             "valid_position_pixels": int(np.count_nonzero(preprocess["valid_position_mask"])),
             "logits_shape": [int(v) for v in inference["logits_shape"]],
             "local_confidence": array_stats(inference["confidence"]),
+            "local_entropy_norm": array_stats(inference["entropy_norm"]),
+            "local_margin": array_stats(inference["margin"]),
             "local_occupied_prob": array_stats(inference["occupied_prob"]),
             "local_free_prob": array_stats(inference["free_prob"]),
             "local_pred_class_unique_counts": format_unique_counts(inference["pred_class"]),
@@ -287,7 +348,10 @@ class IsaacMapPredictor:
                 "valid_position_mask": preprocess_paths["valid_position_mask"],
                 "local_prediction": local_prediction_path,
                 "global_prediction_layer": global_prediction_path,
+                "dense_prediction_uncertainty": dense_uncertainty_path,
             },
+            "dense_uncertainty_artifact_saved": bool(dense_uncertainty_path),
+            "dense_uncertainty_stats": dense_uncertainty_stats,
         }
         timing = {
             "preprocess_time": float(preprocess_time),
@@ -314,6 +378,7 @@ class IsaacMapPredictor:
             "prediction_npz": str(global_prediction_path),
             "global_prediction_npz": str(global_prediction_path),
             "local_prediction_npz": str(local_prediction_path),
+            "dense_prediction_uncertainty_npz": dense_uncertainty_path,
             "summary": summary,
             "summary_json": str(summary_json),
             "timing": timing,

@@ -31,6 +31,11 @@ from isaac_sscnet_preprocess import (
     save_preprocessing_debug,
     world_to_global_grid,
 )
+from prediction_uncertainty_utils import (
+    dense_fields_from_aligned,
+    dense_stats,
+    save_dense_uncertainty_npz,
+)
 
 try:
     from ssc_network.models import make_model
@@ -196,6 +201,9 @@ def run_sscnet_inference(
         logits_t = model(x_depth=depth_t, x_tsdf=None, p=position_t, x_rgb=None)
         class_prob_t = torch.softmax(logits_t, dim=1)
         confidence_t, pred_class_t = torch.max(class_prob_t, dim=1)
+        top2_t = torch.topk(class_prob_t, k=2, dim=1).values
+        margin_t = top2_t[:, 0] - top2_t[:, 1]
+        entropy_norm_t = -torch.sum(class_prob_t * torch.log(class_prob_t + 1.0e-8), dim=1) / math.log(NUM_CLASSES)
         free_prob_t = class_prob_t[:, FREE_CLASS_ID]
         occupied_prob_t = 1.0 - free_prob_t
     if device.type == "cuda":
@@ -206,6 +214,8 @@ def run_sscnet_inference(
         "logits_shape": tuple(int(v) for v in logits_t.shape),
         "pred_class": pred_class_t.squeeze(0).detach().cpu().numpy().astype(np.uint8),
         "confidence": confidence_t.squeeze(0).detach().cpu().numpy().astype(np.float32),
+        "entropy_norm": entropy_norm_t.squeeze(0).detach().cpu().numpy().astype(np.float32),
+        "margin": margin_t.squeeze(0).detach().cpu().numpy().astype(np.float32),
         "free_prob": free_prob_t.squeeze(0).detach().cpu().numpy().astype(np.float32),
         "occupied_prob": occupied_prob_t.squeeze(0).detach().cpu().numpy().astype(np.float32),
         "class_prob": class_prob_t.squeeze(0).detach().cpu().numpy().astype(np.float32),
@@ -230,6 +240,8 @@ def save_local_prediction(
     payload: dict[str, Any] = {
         "pred_class": inference["pred_class"].astype(np.uint8),
         "confidence": inference["confidence"].astype(np.float32),
+        "entropy_norm": inference["entropy_norm"].astype(np.float16),
+        "margin": inference["margin"].astype(np.float16),
         "free_prob": inference["free_prob"].astype(np.float32),
         "occupied_prob": inference["occupied_prob"].astype(np.float32),
         "checkpoint": str(checkpoint),
@@ -301,6 +313,8 @@ def align_local_prediction_to_global(
     pose: dict[str, Any],
     map_bounds: dict[str, Any],
     global_voxel_size: float,
+    entropy_norm: np.ndarray | None = None,
+    margin: np.ndarray | None = None,
     local_volume_m: tuple[float, float, float] = DEFAULT_LOCAL_VOLUME_M,
     local_lowres_voxel_size: float = 0.08,
     alignment_convention: str | None = "current_default_v0",
@@ -315,6 +329,10 @@ def align_local_prediction_to_global(
         raise ValueError(f"Expected local prediction shape {expected_shape}, got {local_shape}")
     if confidence.shape != local_shape or free_prob.shape != local_shape or occupied_prob.shape != local_shape:
         raise ValueError("Local prediction arrays must share the same shape")
+    if entropy_norm is not None and np.asarray(entropy_norm).shape != local_shape:
+        raise ValueError("entropy_norm must share the local prediction shape")
+    if margin is not None and np.asarray(margin).shape != local_shape:
+        raise ValueError("margin must share the local prediction shape")
 
     bounds = normalize_bounds(map_bounds)
     origin, yaw = _pose_origin_yaw(pose)
@@ -340,6 +358,8 @@ def align_local_prediction_to_global(
 
     global_pred_class = np.full(observed_shape, 255, dtype=np.uint8)
     global_confidence = np.zeros(observed_shape, dtype=np.float32)
+    global_entropy_norm = np.zeros(observed_shape, dtype=np.float32)
+    global_margin = np.zeros(observed_shape, dtype=np.float32)
     global_free_prob = np.full(observed_shape, 0.5, dtype=np.float32)
     global_occupied_prob = np.full(observed_shape, 0.5, dtype=np.float32)
     global_prediction_valid = np.zeros(observed_shape, dtype=bool)
@@ -358,9 +378,13 @@ def align_local_prediction_to_global(
         pred_inside = pred_class[inside]
         free_inside = free_prob[inside]
         occ_inside = occupied_prob[inside]
+        entropy_inside = np.zeros_like(conf_inside, dtype=np.float32) if entropy_norm is None else entropy_norm[inside]
+        margin_inside = np.zeros_like(conf_inside, dtype=np.float32) if margin is None else margin[inside]
 
         global_pred_class[selected_idx] = pred_inside[selected_inside_order].astype(np.uint8)
         global_confidence[selected_idx] = conf_inside[selected_inside_order].astype(np.float32)
+        global_entropy_norm[selected_idx] = entropy_inside[selected_inside_order].astype(np.float32)
+        global_margin[selected_idx] = margin_inside[selected_inside_order].astype(np.float32)
         global_free_prob[selected_idx] = free_inside[selected_inside_order].astype(np.float32)
         global_occupied_prob[selected_idx] = occ_inside[selected_inside_order].astype(np.float32)
         global_prediction_valid[selected_idx] = True
@@ -388,6 +412,8 @@ def align_local_prediction_to_global(
     return {
         "global_pred_class": global_pred_class,
         "global_confidence": global_confidence,
+        "global_entropy_norm": global_entropy_norm,
+        "global_margin": global_margin,
         "global_free_prob": global_free_prob,
         "global_occupied_prob": global_occupied_prob,
         "global_prediction_valid": global_prediction_valid,
@@ -407,6 +433,8 @@ def save_global_prediction_layer(
         output_path,
         global_pred_class=aligned["global_pred_class"].astype(np.uint8),
         global_confidence=aligned["global_confidence"].astype(np.float32),
+        global_entropy_norm=aligned["global_entropy_norm"].astype(np.float32),
+        global_margin=aligned["global_margin"].astype(np.float32),
         global_free_prob=aligned["global_free_prob"].astype(np.float32),
         global_occupied_prob=aligned["global_occupied_prob"].astype(np.float32),
         global_prediction_valid=aligned["global_prediction_valid"].astype(bool),
@@ -500,6 +528,8 @@ def run_single(args: argparse.Namespace) -> dict[str, Any]:
         pose=pose,
         map_bounds=bounds,
         global_voxel_size=voxel_size,
+        entropy_norm=inference["entropy_norm"],
+        margin=inference["margin"],
         alignment_convention=alignment_convention,
     )
     global_prediction_path = save_global_prediction_layer(
@@ -515,6 +545,47 @@ def run_single(args: argparse.Namespace) -> dict[str, Any]:
     global_valid_tau = aligned["global_prediction_valid"] & (aligned["global_confidence"] >= tau)
     global_predicted_occupied = global_valid_tau & (aligned["global_occupied_prob"] >= 0.5)
     predicted_unmeasured = global_valid_tau & (observed_state == UNKNOWN)
+    dense_uncertainty_path = ""
+    dense_uncertainty_stats: dict[str, Any] = {}
+    if args.save_dense_uncertainty_artifacts:
+        dense_fields = dense_fields_from_aligned(
+            pred_class=aligned["global_pred_class"],
+            confidence=aligned["global_confidence"],
+            entropy_norm=aligned["global_entropy_norm"],
+            margin=aligned["global_margin"],
+            occupied_prob=aligned["global_occupied_prob"],
+            free_prob=aligned["global_free_prob"],
+            raw_valid_mask=aligned["global_prediction_valid"],
+            observed_state=observed_state,
+            tau=tau,
+        )
+        dense_uncertainty_stats = dense_stats(dense_fields, observed_state)
+        dense_uncertainty_path = str(output_dir / f"dense_prediction_uncertainty_{int(args.step):03d}.npz")
+        save_dense_uncertainty_npz(
+            dense_uncertainty_path,
+            dense_fields,
+            {
+                "stage": "Stage 4A map_predict dense uncertainty contract",
+                "step": int(args.step),
+                "shape": [int(v) for v in observed_state.shape],
+                "voxel_size": float(voxel_size),
+                "bounds": bounds,
+                "alignment_convention": alignment_convention,
+                "tau": tau,
+                "checkpoint_sha256": sha256_file(args.checkpoint),
+                "source_depth_sha256": sha256_file(depth_path),
+                "source_pose_sha256": sha256_file(pose_path),
+                "source_camera_info_sha256": sha256_file(camera_info_path),
+                "source_observed_state_sha256": observed_hash_before,
+                "observed_reference_hash": observed_hash_before,
+                "no_prediction_writeback": True,
+                "prediction_valid_count": dense_uncertainty_stats["prediction_valid_count"],
+                "predicted_unmeasured_count": dense_uncertainty_stats["predicted_unmeasured_count"],
+                "predicted_occupied_count": dense_uncertainty_stats["predicted_occupied_count"],
+                "source_occ_free_count": dense_uncertainty_stats["source_occ_free_count"],
+                "full_class_prob_saved": bool(args.save_probs),
+            },
+        )
 
     summary = {
         "stage": "Stage 4A-5 Isaac single-frame map_predict alignment smoke",
@@ -536,6 +607,8 @@ def run_single(args: argparse.Namespace) -> dict[str, Any]:
         "valid_position_pixels": int(np.count_nonzero(preprocess["valid_position_mask"])),
         "logits_shape": list(inference["logits_shape"]),
         "local_confidence": array_stats(inference["confidence"]),
+        "local_entropy_norm": array_stats(inference["entropy_norm"]),
+        "local_margin": array_stats(inference["margin"]),
         "local_occupied_prob": array_stats(inference["occupied_prob"]),
         "local_free_prob": array_stats(inference["free_prob"]),
         "local_pred_class_unique_counts": format_unique_counts(inference["pred_class"]),
@@ -575,7 +648,10 @@ def run_single(args: argparse.Namespace) -> dict[str, Any]:
             "valid_position_mask": preprocess_paths["valid_position_mask"],
             "local_prediction": local_prediction_path,
             "global_prediction_layer": global_prediction_path,
+            "dense_prediction_uncertainty": dense_uncertainty_path,
         },
+        "dense_uncertainty_artifact_saved": bool(dense_uncertainty_path),
+        "dense_uncertainty_stats": dense_uncertainty_stats,
     }
 
     summary_json = output_dir / "prediction_alignment_summary.json"
@@ -628,6 +704,8 @@ def parse_args() -> argparse.Namespace:
         default="current_default_v0",
     )
     parser.add_argument("--save_probs", action="store_true")
+    parser.add_argument("--save_dense_uncertainty_artifacts", action="store_true")
+    parser.add_argument("--save_compact_probability_fields", action="store_true")
     parser.add_argument("--save_viz", action="store_true")
     parser.add_argument("--print_stats", action="store_true")
     parser.add_argument("--device", default=None, help="Optional torch device, e.g. cuda or cpu.")

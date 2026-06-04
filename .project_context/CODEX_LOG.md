@@ -5427,3 +5427,52 @@ Stage 4A-6.6c-camera-pose-fix result:
 - Gates: `human_visual_inspection_done=false`, `user_needs_to_review_visuals=true`, `formal_expert_sampling_ready=false`, `full_expert_dataset_ready=false`, `stage4a66d_executed=false`, `stage4a67_executed=false`.
 - Next: user should review corrected HTML/MP4. If accepted, proceed to Stage 4A-6.6d USD scene audit + human visual review. If rejected, manually adjust camera/start poses or revise USD.
 - No rollout, expert sampling, map_predict, SSCNet inference, selected action, prediction NPZ, checkpoint change, or RL/GDPO/PPO/BC/IL was run.
+
+Stage 4A-6.10a dense prediction uncertainty artifact regeneration result:
+
+- Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610a_dense_prediction_uncertainty_artifacts`.
+- Dense rerun audit:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610a_uncertainty_audit_rerun_dense`.
+- Input limited audit:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610_prediction_uncertainty_offline_audit`.
+- Updated source:
+  `sim_explorer/isaac_map_predictor.py`,
+  `sim_explorer/run_isaac_map_predict_single.py`,
+  `sim_explorer/sim_prediction_layer.py`,
+  `sim_explorer/prediction_uncertainty_utils.py`,
+  `sim_explorer/regenerate_stage4a610a_dense_uncertainty_artifacts.py`,
+  and `sim_explorer/test_stage4a610a_dense_uncertainty_artifacts.py`.
+- Contract result:
+  future map_predict calls can save compact dense uncertainty artifacts using
+  confidence, entropy_norm, margin, occupied_prob, free_prob, valid mask, and
+  predicted-unmeasured mask. Full `class_prob` is not saved by default.
+- Dense regeneration result:
+  `logical_frame_count=30`, `physical_map_predict_regeneration_calls=30`,
+  dense artifacts `30`, candidate-visible uncertainty rows `480`, and no
+  candidate visibility blocker.
+- Dense audit result:
+  `candidate_level_uncertainty_ready=true` and
+  `uncertainty_aware_expert_pilot_ready=true`. Stage 4A-6.11 was not executed.
+  Candidate confidence/entropy/margin means are `0.8564193916817506`,
+  `0.2142625541271021`, and `0.7945013785113891`.
+- Relationship summaries:
+  source_occ_free vs uncertainty Pearson is `0.037934232555910705` for Stage
+  6.8/6.9 frame1 and `-0.109843280729622` for Stage 6.9 frame2. Frame2 branch
+  mean uncertainty is `0.2738123838789761` for
+  `distinct_nonmeasured_branch`, `0.14163060652624285` for `local_jitter`, and
+  `0.07121249474585056` for `same_as_measured`.
+- Validation:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a610a_py_compile.log`,
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a610a_dense_uncertainty_artifacts.log`,
+  and
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a610a_dense_uncertainty_artifacts_test.log`.
+  Test reported `all_passed=true`.
+- Negative scope stayed clean:
+  no Isaac startup, no capture, no action execution, no rollout, no long
+  rollout, no Stage 4A-6.11 execution, no training, no BC/IL/RL/GDPO/PPO, no
+  prediction writeback, and no source/fixed USD, checkpoint, prior dataset,
+  old Stage 4A-6.10 output, or observed_state modification.
+- Next faithful step:
+  Stage 4A-6.11 uncertainty-aware lambda pilot design, bounded one-action
+  only, not rollout. Do not jump to long rollout.
