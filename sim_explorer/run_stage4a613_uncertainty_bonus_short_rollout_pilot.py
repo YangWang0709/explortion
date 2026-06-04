@@ -45,6 +45,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 from depth_to_voxel import FREE, OCCUPIED, UNKNOWN, update_observed_state_from_depth
+from isaac_lifecycle_guard import write_finalization_sentinel as guard_write_finalization_sentinel
 from isaac_map_predictor import IsaacMapPredictor
 
 import run_stage4a67_measured_only_expert_pilot as s67
@@ -946,6 +947,70 @@ def safe_close_simulation_app(simulation_app: Any, output_dir: Path, timeout_s: 
     return report
 
 
+def maybe_write_close_guard_finalization_sentinel(
+    args: argparse.Namespace,
+    output_dir: Path,
+    reports: dict[str, Any],
+) -> dict[str, Any] | None:
+    if not bool(getattr(args, "write_finalization_sentinel_before_close", False)) and not getattr(args, "finalization_sentinel_path", None):
+        return None
+
+    sentinel_path = Path(getattr(args, "finalization_sentinel_path", None) or (output_dir / "stage_finalized_before_isaac_close.json"))
+    run_id = str(getattr(args, "close_guard_run_id", "") or f"stage4a613_{int(time.time())}")
+    dataset_path = Path(reports["dataset_path"])
+    manifest_path = output_dir / "short_rollout_manifest.jsonl"
+    summary_path = output_dir / "stage4a613_uncertainty_bonus_short_rollout_pilot_summary.json"
+    html_path = output_dir / "short_rollout_uncertainty_bonus_index.html"
+    mp4_candidate = output_dir / "short_rollout_flythrough.mp4"
+    mp4_path = mp4_candidate if mp4_candidate.is_file() else None
+    audit_paths = [
+        output_dir / "expert_data_quality_audit.json",
+        output_dir / "uncertainty_bonus_runtime_quality_audit.json",
+        output_dir / "prediction_safety_audit.json",
+        output_dir / "uncertainty_safety_audit.json",
+        output_dir / "rollout_safety_audit.json",
+        output_dir / "dataset_integrity_report.json",
+    ]
+    required_outputs = [
+        manifest_path,
+        output_dir / "short_rollout_metadata.json",
+        dataset_path,
+        summary_path,
+        html_path,
+        *audit_paths,
+    ]
+    if mp4_path is not None:
+        required_outputs.append(mp4_path)
+    sentinel = guard_write_finalization_sentinel(
+        sentinel_path,
+        stage=STAGE,
+        run_id=run_id,
+        output_dir=output_dir,
+        required_output_paths=required_outputs,
+        manifest_path=manifest_path,
+        summary_path=summary_path,
+        dataset_path=dataset_path,
+        html_path=html_path,
+        mp4_path=mp4_path,
+        audit_paths=audit_paths,
+        safe_to_terminate_requested=True,
+        reason="stage4a613_outputs_finalized_before_simulation_app_close",
+        no_long_rollout=True,
+        no_training=True,
+        no_rl_gdpo=True,
+        no_prediction_writeback=True,
+        no_uncertainty_writeback=True,
+        extra={
+            "no_full_expert_dataset": True,
+            "no_bc_il_rl_gdpo_ppo": True,
+            "primary_formula": PRIMARY_FORMULA,
+            "bounded_short_rollout": True,
+        },
+    )
+    save_json(output_dir / "finalization_sentinel_write_report.json", sentinel)
+    return sentinel
+
+
 def run_dynamic_short_rollout(args: argparse.Namespace, app_launcher_cls: Any, output_dir: Path, inputs: dict[str, Any]) -> dict[str, Any]:
     os.environ["VK_ICD_FILENAMES"] = "/usr/share/vulkan/icd.d/nvidia_icd.json"
     os.environ["__GLX_VENDOR_LIBRARY_NAME"] = "nvidia"
@@ -1373,7 +1438,7 @@ def run_dynamic_short_rollout(args: argparse.Namespace, app_launcher_cls: Any, o
             per_start_rows.append(start_summary)
             observed_final_by_start[sid] = observed.copy()
 
-        shutdown_report = safe_close_simulation_app(simulation_app, output_dir)
+        shutdown_report = {"close_called": False, "deferred_until_output_finalization": True}
     except Exception:
         save_json(output_dir / "partial_rollout_error.json", {"stage": STAGE, "error": "exception during dynamic rollout", "time_utc": utc_now()})
         raise
@@ -1399,6 +1464,7 @@ def run_dynamic_short_rollout(args: argparse.Namespace, app_launcher_cls: Any, o
         "isaac_startup_count": 1,
         "isaac_startup_seconds": startup_s,
         "shutdown_report": shutdown_report,
+        "simulation_app": simulation_app,
         "total_executed_actions": total_actions,
         "total_decision_frames": len(primary_rows),
         "total_terminal_frames": len(terminal_records),
@@ -2418,6 +2484,10 @@ def parse_args() -> tuple[argparse.Namespace, Any]:
     parser.add_argument("--no_full_expert_dataset", action="store_true")
     parser.add_argument("--no_training", action="store_true")
     parser.add_argument("--no_rl_gdpo", action="store_true")
+    parser.add_argument("--close_guard_run_id", default="")
+    parser.add_argument("--finalization_sentinel_path", type=Path, default=None)
+    parser.add_argument("--write_finalization_sentinel_before_close", action="store_true")
+    parser.add_argument("--isaac_close_timeout_sec", type=float, default=45.0)
     AppLauncher.add_app_launcher_args(parser)
     args = parser.parse_args()
     if hasattr(args, "headless"):
@@ -2454,6 +2524,10 @@ def main() -> None:
     summary = write_summary(args, output_dir, inputs, bundle, reports, time.perf_counter() - t0)
     write_html_index(output_dir, bundle["per_start_rows"], bundle["primary_rows"])
     write_text(output_dir / "git_status_after.txt", git_status_text())
+    sentinel = maybe_write_close_guard_finalization_sentinel(args, output_dir, reports)
+    if sentinel is not None:
+        bundle["finalization_sentinel"] = sentinel
+    bundle["shutdown_report"] = safe_close_simulation_app(bundle["simulation_app"], output_dir, timeout_s=float(args.isaac_close_timeout_sec))
     print(json.dumps(jsonable({"completed": summary["completed"], "output_dir": str(output_dir), "summary": str(output_dir / "stage4a613_uncertainty_bonus_short_rollout_pilot_summary.json")}), indent=2, sort_keys=True))
 
 

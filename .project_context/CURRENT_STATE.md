@@ -3,6 +3,45 @@ Updated: 2026-06-04
 
 Current state:
 
+- Stage 4A-6.13a Isaac close timeout lifecycle hardening is complete and
+  validated. Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613a_isaac_close_guard_hardening`.
+- This was lifecycle hardening only: no real Isaac startup, no capture, no
+  map_predict, no SSCNet inference, no action execution, no rollout, no long
+  rollout, no training, and no BC/IL/RL/GDPO/PPO.
+- Implemented reusable guard utilities in
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/isaac_lifecycle_guard.py`, a
+  process-level supervisor wrapper in
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/run_with_isaac_close_guard.py`,
+  fake child coverage in
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/fake_hanging_isaac_child.py`,
+  and validation/report generation in
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/test_isaac_lifecycle_guard.py`.
+- Patched
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/run_stage4a613_uncertainty_bonus_short_rollout_pilot.py`
+  for future finalization-sentinel support before `simulation_app.close()`.
+  The close point is now after output finalization when the optional guard
+  arguments are used; rollout scoring behavior was not changed and Stage
+  4A-6.13 was not rerun.
+- Fake child validation passed:
+  clean exit returned `0` with `close_status=clean_exit`; hang after safe
+  finalization returned `0` with
+  `close_status=forced_terminated_after_finalization` and
+  `success_with_close_hang=true`; hang before finalization returned nonzero
+  with `close_status=failed_before_finalization`.
+- Process and GPU snapshots are emitted before/after both the top-level
+  hardening test and each fake child supervisor run. Orphan scan is report-only
+  by default, and no unrelated process kill list was produced.
+- Source USD, fixed USD, checkpoint, Stage 4A-6.13 dataset, and Stage
+  4A-6.13 manifest hashes were unchanged. Prediction and uncertainty writeback
+  remained false.
+- Recommended next:
+  review the 6.13 visual/audit package, then choose either BC dataset
+  design/preparation or a second explicitly approved short rollout with small
+  variations. Do not jump directly to long rollout. Any future long rollout
+  must use the close guard and include expert data quality visualization/audit
+  outputs.
+
 - Stage 4A-6.13 uncertainty-bonus bounded short rollout pilot is complete and
   validated. Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613_uncertainty_bonus_short_rollout_pilot`.

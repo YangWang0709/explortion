@@ -3,6 +3,41 @@ Updated: 2026-06-04
 
 Current:
 
+- Stage 4A-6.13a Isaac close timeout lifecycle hardening is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613a_isaac_close_guard_hardening`.
+- Completed task:
+  implemented a reusable Isaac lifecycle guard, process-level close supervisor,
+  fake child tests, required reports, process/GPU snapshots, orphan scan
+  reporting, and a future finalization-sentinel hook in the Stage 4A-6.13
+  runner. This was engineering stability hardening only, not a rollout and not
+  training.
+- Counts for this hardening stage:
+  `isaac_startup_count_this_stage=0`, `capture_count_this_stage=0`,
+  `map_predict_calls_this_stage=0`,
+  `sscnet_inference_calls_this_stage=0`,
+  `action_execution_count_this_stage=0`,
+  `rollout_executed_this_stage=false`,
+  `long_rollout_executed_this_stage=false`,
+  `training_executed_this_stage=false`, and
+  `bc_il_rl_gdpo_ppo_executed_this_stage=false`.
+- Fake child test results:
+  clean exit passed with `close_status=clean_exit`; hang after safe
+  finalization was terminated by the supervisor and classified as
+  `success_with_close_hang=true`; hang before finalization was terminated and
+  classified as `failed_before_finalization`.
+- Safety:
+  supervisor termination is restricted to its own child process group, orphan
+  scanning is report-only by default, and no unrelated process kill list was
+  produced. Source USD, fixed USD, checkpoint, Stage 4A-6.13 dataset, and Stage
+  4A-6.13 manifest hashes were unchanged.
+- Current recommended next task:
+  review the 6.13 visual/audit package. If clean, choose either BC dataset
+  design/preparation or a second explicitly approved short rollout with small
+  variations. Do not jump directly to long rollout; any future long rollout
+  must use the close guard and include expert data quality visualization/audit
+  outputs.
+
 - Stage 4A-6.13 uncertainty-bonus bounded short rollout pilot is complete.
   Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613_uncertainty_bonus_short_rollout_pilot`.

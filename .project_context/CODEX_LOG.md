@@ -1,6 +1,58 @@
 Codex Log
 Updated: 2026-06-04
 
+Stage 4A-6.13a Isaac close timeout lifecycle hardening actions:
+
+- Re-read required project context and Git docs:
+  `.project_context/CURRENT_STATE.md`, `.project_context/TODO.md`,
+  `.project_context/CODEX_LOG.md`, `README.md`, `ARTIFACTS.md`,
+  `ENVIRONMENT.md`, and `GIT_INITIALIZATION_REPORT.md`.
+- Re-read Stage 4A-6.13 required outputs and logs. Confirmed Stage 4A-6.13 is
+  complete and accepted as valid, with `simulation_app.close()` hanging after
+  finalized outputs; Stage 4A-6.13 was not rerun.
+- Implemented:
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/isaac_lifecycle_guard.py`,
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/run_with_isaac_close_guard.py`,
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/fake_hanging_isaac_child.py`,
+  and
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/test_isaac_lifecycle_guard.py`.
+- Patched
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/run_stage4a613_uncertainty_bonus_short_rollout_pilot.py`
+  with optional `--close_guard_run_id`,
+  `--finalization_sentinel_path`,
+  `--write_finalization_sentinel_before_close`, and
+  `--isaac_close_timeout_sec` support. Future guarded reruns can emit an
+  atomic finalization sentinel after required outputs/audits are finalized and
+  before `simulation_app.close()`.
+- Validation output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613a_isaac_close_guard_hardening`.
+  The test reported `all_passed=true`.
+- Fake child results:
+  clean exit returned `0` with `close_status=clean_exit`; hang after safe
+  finalization returned `0` with
+  `close_status=forced_terminated_after_finalization` and
+  `success_with_close_hang=true`; hang before finalization returned nonzero
+  with `close_status=failed_before_finalization`.
+- Process/GPU snapshots were written before/after the top-level hardening test
+  and inside each fake child supervisor output directory. Orphan scan remained
+  report-only by default; no unrelated process kill list was produced.
+- Negative scope:
+  no real Isaac startup, no capture, no map_predict, no SSCNet inference, no
+  action execution, no rollout, no long rollout, no training, and no
+  BC/IL/RL/GDPO/PPO. No prediction writeback or uncertainty writeback.
+- Hash safety:
+  source USD, fixed USD, checkpoint, Stage 4A-6.13 dataset, and Stage 4A-6.13
+  manifest were unchanged.
+- Validation logs:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a613a_py_compile.log` and
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a613a_isaac_close_guard_hardening_test.log`.
+- Current next small task:
+  review the 6.13 visual/audit package, then choose BC dataset
+  design/preparation or a second explicitly approved short rollout with small
+  variations. Do not jump directly to long rollout; any future long rollout
+  must use the close guard and include expert data quality visualization/audit
+  outputs.
+
 Stage 4A-6.13 uncertainty-bonus short rollout pilot actions:
 
 - Re-read required project context and Git docs:
