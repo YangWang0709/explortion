@@ -1,7 +1,47 @@
 Project TODO
-Updated: 2026-06-03
+Updated: 2026-06-04
 
 Current:
+
+- Stage 4A-6.8 map_predict/lambda48 expert pilot is complete. Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot`.
+- Validated counts:
+  `sample_count=10`, `capture_count=10`, `map_predict_calls=10`,
+  `predictor_loaded_once=true`, `sscnet_inference_called=true`,
+  `exactly_one_headless_capture_per_start=true`, and
+  `exactly_one_action_per_start=true`.
+  Isaac startup count is `1`; `simulation_app.close()` hung after all 10
+  captures completed, so the process was terminated and a recovery run reused
+  the captured files without a second Isaac startup.
+- Lambda48 formula:
+  `gain_exp / cost + 48 * minmax(source_occ_free)`, `lambda_sc=48`,
+  per-start valid candidate/yaw min-max normalization, reachable frontier
+  candidate selection, top_n `16`.
+- Comparison result:
+  lambda48 vs measured shadow produced `same_as_measured=4`,
+  `local_jitter=4`, `distinct_nonmeasured_branch=2`,
+  `no_valid_candidate=0`, `low_cost_artifact=0`, and
+  `historical_prior_basin=0`. Stage 4A-6.8 vs Stage 4A-6.7 action changed
+  count is `4`, mean action distance is `0.3074937611088073m`, and mean yaw
+  delta is `0.6706520898196431rad`.
+- Safety and quality audits passed:
+  prediction writeback `false`, prediction traversability/collision/
+  ray-blocking/candidate-validity use `false`, target/ground-truth/future
+  observed scoring `false`, checkpoint unchanged, source USD unchanged, fixed
+  USD unchanged, source observed_state unchanged. Expert data quality audit
+  passed with warning class `candidate_all_local`.
+- Key artifacts:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot/expert_dataset.npz`,
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot/expert_pilot_index.html`,
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot/expert_action_flythrough.mp4`,
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot/expert_data_quality_audit.md`,
+  and `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot/stage4a68_vs_stage4a67_comparison.md`.
+- Current recommended next task:
+  review the 6.7 vs 6.8 comparison and expert data quality visual package.
+  If clean, choose either a bounded two-frame pilot or BC dataset design
+  preparation. Do not jump directly to long rollout unless the user explicitly
+  approves; when long rollout eventually starts, it must include expert data
+  quality visualization and audit outputs.
 
 - Stage 4A-6.6c-usd-download-official-isaac-deps is complete as a blocked
   run. Output:

@@ -1,5 +1,74 @@
 Codex Log
-Updated: 2026-06-03
+Updated: 2026-06-04
+
+Stage 4A-6.8 map_predict/lambda48 expert pilot actions:
+
+- Re-read required project context and Git docs:
+  `.project_context/CURRENT_STATE.md`, `.project_context/TODO.md`,
+  `.project_context/CODEX_LOG.md`, `README.md`, `ARTIFACTS.md`,
+  `ENVIRONMENT.md`, and `GIT_INITIALIZATION_REPORT.md`.
+- Re-read required Stage 4A-6.6c camera-pose-fix artifacts, including
+  `stage4a66c_usd_camera_pose_fix_summary.json`,
+  `start_variants_interior.json`, selected validation/inspection manifests,
+  `camera_info.json`, and `scene_metadata.json`.
+- Re-read Stage 4A-6.7 measured-only pilot summary, dataset NPZ keys,
+  dataset integrity report, and safety audit. Confirmed Stage 4A-6.7 was
+  complete with `sample_count=10`, `capture_count=10`, exactly one action per
+  start, no map_predict/SSCNet, no rollout, and no RL/training.
+- Implemented:
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/run_stage4a68_map_predict_lambda48_expert_pilot.py`
+  and
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/test_stage4a68_map_predict_lambda48_expert_pilot.py`.
+- Ran py_compile in `env_isaaclab` for the new runner/test plus
+  `scene_factory.py`, `isaac_map_predictor.py`, `offline_mini_rrt_tree.py`,
+  and `sim_prediction_layer.py`:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a68_py_compile.log`.
+- Ran the Stage 4A-6.8 pilot on the fixed USD using the same 10 interior
+  starts. Isaac started exactly once and completed all 10 start RGB/depth
+  captures. `simulation_app.close()` then hung; after the capture files were
+  finalized on disk, the process was terminated. The recovery run reused those
+  captures and did not start Isaac again.
+- The recovery run loaded SSCNet predictor once from
+  `/home/ubuntu22/sc_explorer_ws/checkpoints/full_train/cpBest_SSCNet_NYU_full_train.pth.tar`
+  and ran exactly 10 map_predict/SSCNet calls, one per start, with
+  `alignment_convention=code_consistent_v1` and `tau=0.1`.
+- Lambda48 scoring used:
+  `gain_exp / cost + 48 * minmax(source_occ_free)`.
+  `source_occ_free` is the raw visible predicted-unmeasured voxel count from
+  the read-only prediction layer. Prediction was not used for traversability,
+  collision, ray blocking, candidate validity, edge validity, target/ground
+  truth scoring, or future-observed scoring.
+- Output directory:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot`.
+  Generated required dataset/report/visual package, including
+  `expert_dataset.npz`, `expert_dataset_manifest.jsonl`,
+  `expert_pilot_index.html`, `expert_action_flythrough.mp4`,
+  per-sample RGB/depth/observed/prediction/top-candidate/action-quality
+  files, dataset-level plots, prediction safety audit, expert data quality
+  audit, and comparisons to Stage 4A-6.7.
+- Result:
+  `sample_count=10`, `capture_count=10`, `map_predict_calls=10`,
+  `same_as_measured=4`, `local_jitter=4`,
+  `distinct_nonmeasured_branch=2`, `no_valid_candidate=0`,
+  `low_cost_artifact=0`, and `historical_prior_basin=0`.
+  Stage 4A-6.8 vs Stage 4A-6.7 action changed count was `4`, mean action
+  distance `0.3074937611088073m`, and mean yaw delta
+  `0.6706520898196431rad`.
+- Validation passed:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a68_map_predict_lambda48_expert_pilot_test.log`
+  reported `all_passed: true`. Dataset integrity, safety audit, prediction
+  safety audit, and expert data quality audit all passed.
+- Safety/negative scope stayed clean:
+  no continuous rollout, no long rollout, no second action, no third frame, no
+  full expert dataset, no RL/GDPO/PPO/BC/IL, no training, no replay buffer, no
+  policy checkpoint, no checkpoint modification, no source USD modification,
+  no fixed USD modification, no source observed_state modification, and no
+  prediction writeback.
+- Current next small task:
+  review Stage 4A-6.7 vs Stage 4A-6.8 comparison and expert quality visuals,
+  then decide whether to run a bounded two-frame pilot or start BC dataset
+  design preparation. Do not jump directly to long rollout without explicit
+  user approval.
 
 Stage 4A-6.6c-usd-dependency-fix-env-corrected actions:
 

@@ -1,7 +1,64 @@
 Project: SC-Explorer SSCNet Stage 4A-6.6c-home-like-scene-v1-validation
-Updated: 2026-06-03
+Updated: 2026-06-04
 
 Current state:
+
+- Stage 4A-6.8 map_predict/lambda48 expert pilot is complete and validated.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot`.
+- Runtime/result:
+  `sample_count=10`, `capture_count=10`, `map_predict_calls=10`,
+  `sscnet_inference_called=true`, `predictor_loaded_once=true`,
+  `exactly_one_headless_capture_per_start=true`, and
+  `exactly_one_action_per_start=true`.
+  Isaac startup count is recorded as `1`: the first run completed all 10
+  start captures, then `simulation_app.close()` hung. The process was
+  terminated only after the captures were on disk; the recovery run reused
+  those captures and did not start Isaac a second time.
+- Inputs:
+  fixed USD
+  `/home/ubuntu22/sc_explorer_ws/assets/home_like_scene_v1/current_environment_localized_defaultprim/home_like_scene_v1.usd`,
+  corrected camera/start package
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a66c_usd_camera_pose_fix`,
+  and Stage 4A-6.7 measured-only pilot
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a67_measured_only_expert_pilot`.
+  The same 10 interior start variant IDs were used.
+- Lambda48 formula:
+  `gain_exp / cost + 48 * minmax(source_occ_free)`, with `lambda_sc=48`.
+  Min-max scope is per start over valid candidate/yaw scored rows.
+  `source_occ_free` is the raw count of visible predicted-unmeasured voxels
+  from the read-only map_predict layer; prediction is not used for
+  traversability, collision, ray blocking, candidate validity, or edge
+  validity.
+- Lambda48 vs measured shadow:
+  `same_as_measured=4`, `local_jitter=4`,
+  `distinct_nonmeasured_branch=2`, `no_valid_candidate=0`,
+  `low_cost_artifact=0`, and `historical_prior_basin=0`.
+  Stage 4A-6.8 vs Stage 4A-6.7 action changed count is `4`, mean action
+  distance is `0.3074937611088073m`, and mean yaw delta is
+  `0.6706520898196431rad`.
+- Safety and quality:
+  `prediction_safety_audit.passed=true`, `dataset_integrity_report.passed=true`,
+  `safety_audit.passed=true`, `expert_data_quality_audit.passed=true`.
+  The only quality warning class is `candidate_all_local`; all 10 samples are
+  explainable. Checkpoint, source USD, fixed USD, and source observed_state are
+  unchanged.
+- Main artifacts:
+  dataset `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot/expert_dataset.npz`,
+  manifest `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot/expert_dataset_manifest.jsonl`,
+  HTML `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot/expert_pilot_index.html`,
+  flythrough `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot/expert_action_flythrough.mp4`,
+  and comparison reports
+  `lambda48_vs_measured_comparison.*` and
+  `stage4a68_vs_stage4a67_comparison.*`.
+- Gates remain closed:
+  no long rollout, no second action, no third frame, no full expert dataset,
+  no RL/GDPO/PPO/BC/IL, no training, no replay buffer, no policy checkpoint,
+  no prediction writeback, and no USD/source observed_state modification.
+- Recommended next:
+  inspect the 6.7 vs 6.8 comparison and the expert data quality visual package,
+  then decide whether to run a bounded two-frame pilot or prepare BC dataset
+  design. Do not jump directly to long rollout unless explicitly approved.
 
 - Stage 4A-6.6c-usd-download-official-isaac-deps is complete as a blocked
   dependency-download/localization + one-retry attempt. New script:
