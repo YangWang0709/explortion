@@ -1,0 +1,31 @@
+# Git Ignored Summary
+
+Generated after repository .gitignore creation during project Git initialization.
+
+## Ignored status entries
+
+!! assets/
+!! building_scene.usd
+!! checkpoints/
+!! data/
+!! logs/
+!! outputs/
+!! sim_explorer/__pycache__/
+!! ssc_exploration/ssc_network/__pycache__/
+!! ssc_exploration/ssc_network/dataloaders/__pycache__/
+!! ssc_exploration/ssc_network/il/__pycache__/
+!! ssc_exploration/ssc_network/models/__pycache__/
+!! ssc_exploration/ssc_network/pretrained_models/
+!! ssc_exploration/ssc_network/utils/__pycache__/
+
+## Targeted ignored artifact checks
+
+.gitignore:60:*.usd	building_scene.usd
+.gitignore:25:outputs/	outputs/isaac_stage4a66c_usd_camera_pose_fix
+.gitignore:25:outputs/	outputs/isaac_stage4a66c_usd_defaultprim_fix/observed_state_final.npy
+.gitignore:21:logs/	logs/git_repo_safety_check.log
+.gitignore:46:checkpoints/	checkpoints/full_train/cpBest_SSCNet_NYU_full_train.pth.tar
+.gitignore:32:data/	data/real_nyu_npz/NYUtrain_npz.zip
+.gitignore:57:assets/home_like_scene_v1/current_environment/dependencies/	assets/home_like_scene_v1/current_environment/dependencies
+.gitignore:59:assets/home_like_scene_v1/current_environment_localized_defaultprim/	assets/home_like_scene_v1/current_environment_localized_defaultprim/home_like_scene_v1.usd
+.gitignore:54:ssc_exploration/ssc_network/pretrained_models/	ssc_exploration/ssc_network/pretrained_models/weights/PALNet.pth.tar

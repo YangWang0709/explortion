@@ -1,0 +1,92 @@
+# Python
+**pycache**/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Runtime outputs
+outputs/
+runs/
+wandb/
+tensorboard/
+tb_logs/
+
+# Datasets / large data
+data/
+datasets/
+*.npz
+*.npy
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Checkpoints / model weights
+checkpoints/
+*.pth
+*.pth.tar
+*.pt
+*.ckpt
+*.onnx
+*.engine
+*.safetensors
+ssc_exploration/ssc_network/pretrained_models/
+
+# Isaac / USD large assets
+assets/home_like_scene_v1/current_environment/dependencies/
+assets/home_like_scene_v1/current_environment_localized/
+assets/home_like_scene_v1/current_environment_localized_defaultprim/
+*.usd
+*.usda
+*.usdc
+*.usdz
+*.fbx
+*.obj
+*.glb
+*.gltf
+*.mtl
+*.png
+*.jpg
+*.jpeg
+*.dds
+*.exr
+*.hdr
+*.tga
+*.mp4
+
+# Local environment and secrets
+.env
+*.env
+*.pem
+*.key
+
+# But allow small docs/manifests if explicitly added later
+!README.md
+!ARTIFACTS.md
+!ENVIRONMENT.md
+!GIT_INITIALIZATION_REPORT.md
+!git_tracked_files.txt
+!git_ignored_summary.txt
+!.project_context/
+!.project_context/*.md
