@@ -3,6 +3,57 @@ Updated: 2026-06-04
 
 Current state:
 
+- Stage 4A-6.10 prediction uncertainty offline audit is complete in
+  `summary_only_limited` mode. Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610_prediction_uncertainty_offline_audit`.
+- Inputs loaded:
+  Stage 4A-6.8
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot`
+  and Stage 4A-6.9
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot`.
+  Optional Stage 4A-6.4 calibration and Stage 4A-6.2 diagnostics context were
+  present and recorded. Fixed USD and checkpoint hashes matched prior reports.
+- Artifact inventory:
+  `prediction_artifacts_found=189`, dense probability/confidence/logit
+  artifacts `0`, frames analyzed `30`, top-candidate rows analyzed `480`,
+  and candidate-level uncertainty rows `0`.
+- Uncertainty result:
+  confidence, entropy, and margin were not available in the existing 6.8/6.9
+  artifacts. `map_predict_summary` records `prediction_summary_only=true` and
+  the dense prediction NPZ paths were removed after summary. Confidence
+  mean/range, entropy mean/range, margin mean/range, low-confidence fractions,
+  and high-entropy fractions are therefore `not_available_summary_only`.
+- Available score/count summaries:
+  candidate `source_occ_free` mean/range `48.32083333333333 / 13..85`;
+  selected lambda48 `source_occ_free` mean/range `53.6 / 36..78`;
+  prediction density mean/range
+  `0.025579121979121978 / 0.021895323895323896..0.02678078078078078`.
+  Frame2 minus Frame1 predicted-unmeasured count delta mean/range was
+  `1467.9 / -9142..13754`.
+- Relationship audits:
+  `source_occ_free` vs uncertainty, branch class vs uncertainty,
+  `candidate_all_local` vs low-confidence/high-entropy, local_jitter vs
+  uncertainty, distinct_nonmeasured_branch vs uncertainty, and shadow
+  uncertainty scores are blocked by missing dense confidence/probability
+  fields. The audit keeps `source_occ_free` separate from uncertainty.
+- Readiness:
+  `uncertainty_feature_extraction_complete=true`,
+  `candidate_level_uncertainty_ready=false`, and
+  `uncertainty_aware_expert_pilot_ready=false`. Main blocker:
+  `blocked_missing_dense_prediction_probability_fields`; candidate visibility
+  voxel probability lists are also absent.
+- Safety stayed closed for Stage 4A-6.10:
+  no Isaac startup, no capture, no map_predict, no SSCNet inference, no action,
+  no rollout, no long rollout, no training, no BC/IL/RL/GDPO/PPO, no
+  prediction writeback, and no source/fixed USD, checkpoint, source
+  observed_state, or 6.8/6.9 dataset modification. Validation passed:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a610_prediction_uncertainty_offline_audit_test.log`.
+- Recommended next:
+  update a future map_predict artifact-saving contract to persist dense
+  probability/confidence/entropy/margin fields and candidate-visible voxel
+  probability references, then rerun the offline uncertainty audit. Do not
+  jump to long rollout.
+
 - Stage 4A-6.9 bounded two-frame lambda48 pilot is complete and validated.
   Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot`.

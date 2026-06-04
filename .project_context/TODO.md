@@ -3,6 +3,39 @@ Updated: 2026-06-04
 
 Current:
 
+- Stage 4A-6.10 prediction uncertainty offline audit is complete in
+  `summary_only_limited` mode. Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610_prediction_uncertainty_offline_audit`.
+- Loaded Stage 4A-6.8 and 6.9 outputs, plus optional Stage 4A-6.4 calibration
+  and Stage 4A-6.2 diagnostics context. The audit analyzed `30` frames and
+  `480` top-candidate rows, but produced `0` candidate-level uncertainty rows
+  because dense probability/confidence/logit artifacts are absent.
+- Key metrics:
+  dense prediction/probability artifacts `0`; confidence, entropy, margin,
+  low-confidence fractions, and high-entropy fractions are
+  `not_available_summary_only`. Candidate `source_occ_free` mean/range is
+  `48.32083333333333 / 13..85`; selected lambda48 `source_occ_free`
+  mean/range is `53.6 / 36..78`; prediction density mean/range is
+  `0.025579121979121978 / 0.021895323895323896..0.02678078078078078`.
+  Frame2 minus Frame1 predicted-unmeasured count delta mean/range is
+  `1467.9 / -9142..13754`.
+- Readiness:
+  `uncertainty_feature_extraction_complete=true`,
+  `candidate_level_uncertainty_ready=false`, and
+  `uncertainty_aware_expert_pilot_ready=false`. Main blocker:
+  missing dense probability/confidence/entropy/margin fields and missing
+  candidate-visible voxel probability lists.
+- Current recommended next task:
+  update future map_predict artifact saving so dense confidence/probability,
+  entropy, margin, and candidate-visible probability references are persisted,
+  then rerun Stage 4A-6.10. Do not run Stage 4A-6.11 yet and do not jump to
+  long rollout.
+- Safety reminder:
+  Stage 4A-6.10 did not start Isaac, capture, rerun map_predict, run SSCNet
+  inference, execute actions, rollout, train, run BC/IL/RL/GDPO/PPO, write
+  prediction to observed_state, or modify source/fixed USD, checkpoint, source
+  observed_state, or 6.8/6.9 datasets.
+
 - Stage 4A-6.9 bounded two-frame lambda48 pilot is complete. Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot`.
 - Validated counts:

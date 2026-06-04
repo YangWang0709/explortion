@@ -1,6 +1,70 @@
 Codex Log
 Updated: 2026-06-04
 
+Stage 4A-6.10 prediction uncertainty offline audit actions:
+
+- Re-read required project context and Git docs:
+  `.project_context/CURRENT_STATE.md`, `.project_context/TODO.md`,
+  `.project_context/CODEX_LOG.md`, `README.md`, `ARTIFACTS.md`,
+  `ENVIRONMENT.md`, and `GIT_INITIALIZATION_REPORT.md`.
+- Re-read required Stage 4A-6.8 artifacts, including summary, dataset NPZ,
+  manifest, per-sample summary, lambda48 decisions, measured-shadow decisions,
+  map_predict summary, prediction safety audit, expert data quality audit, and
+  Stage 4A-6.8 vs 6.7 comparison. Re-read required Stage 4A-6.9 summary,
+  two-frame dataset NPZ, manifest, per-start/per-frame summaries, Frame1 and
+  Frame2 lambda48 decisions, map_predict summary, prediction safety audit,
+  expert data quality audit, and two-frame stability audit.
+- Implemented:
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/extract_stage4a610_prediction_uncertainty_audit.py`
+  and
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/test_stage4a610_prediction_uncertainty_audit.py`.
+- Ran py_compile in `env_isaaclab`:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a610_py_compile.log`.
+- Ran the offline audit only. No Isaac runtime was imported or started; no
+  capture, map_predict rerun, SSCNet inference, checkpoint inference load,
+  action execution, second action, third frame, rollout, long rollout,
+  training, BC/IL/RL/GDPO/PPO, replay buffer, policy checkpoint, prediction
+  writeback, source/fixed USD modification, source observed_state
+  modification, or 6.8/6.9 dataset modification occurred.
+- Output directory:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610_prediction_uncertainty_offline_audit`.
+  Generated required manifests, artifact inventory, formula reference,
+  frame/candidate/selected-action audit tables, source-occ/branch/frame
+  comparison reports, shadow-score blocked audit, readiness decision, dense
+  uncertainty blocker, safety recheck, no-runtime reports, visual summary
+  package, HTML index, recommended next step, and future 6.11 sketch marked
+  `DO NOT RUN IN STAGE 4A-6.10.`
+- Result:
+  `prediction_artifacts_found=189`, dense probability/confidence/logit
+  artifacts `0`, `frames_analyzed=30`, top-candidate rows analyzed `480`,
+  and candidate-level uncertainty rows `0`. Mode is
+  `summary_only_limited`. Existing 6.8/6.9 map_predict summaries record
+  `prediction_summary_only=true` and removed dense prediction NPZ paths, so
+  confidence, entropy, margin, low-confidence fractions, and high-entropy
+  fractions are `not_available_summary_only`.
+- Available score/count summaries:
+  candidate `source_occ_free` mean/range `48.32083333333333 / 13..85`,
+  selected lambda48 `source_occ_free` mean/range `53.6 / 36..78`,
+  prediction density mean/range
+  `0.025579121979121978 / 0.021895323895323896..0.02678078078078078`, and
+  Frame2 minus Frame1 predicted-unmeasured count delta mean/range
+  `1467.9 / -9142..13754`.
+- Readiness:
+  `uncertainty_feature_extraction_complete=true`,
+  `candidate_level_uncertainty_ready=false`, and
+  `uncertainty_aware_expert_pilot_ready=false`. Main blocker:
+  `blocked_missing_dense_prediction_probability_fields`; candidate-visible
+  voxel probability lists are also missing. `source_occ_free` remains a
+  separate raw predicted-unmeasured count feature, not uncertainty.
+- Validation passed:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a610_prediction_uncertainty_offline_audit_test.log`
+  reported `all_passed: true`.
+- Current next small task:
+  update future map_predict artifact saving to persist dense
+  probability/confidence/entropy/margin fields and candidate-visible
+  probability references, then rerun the offline audit. Do not run Stage
+  4A-6.11 yet and do not jump to long rollout.
+
 Stage 4A-6.9 bounded two-frame lambda48 pilot actions:
 
 - Re-read required project context and Git docs:
