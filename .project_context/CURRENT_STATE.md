@@ -3,6 +3,48 @@ Updated: 2026-06-04
 
 Current state:
 
+- Stage 4A-7.0 BC dataset design/preparation is complete and validated.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation`.
+- This was BC dataset schema/converter/audit preparation only: no real Isaac
+  startup, no capture, no map_predict, no SSCNet inference, no action
+  execution, no rollout, no long rollout, no BC training, no optimizer step,
+  no model checkpoint, and no RL/GDPO/PPO.
+- Primary label policy:
+  `stage4a613_uncertainty_bonus_executed_primary`, using Stage 4A-6.13
+  executed `uncertainty_bonus_composite_beta8` primary actions as candidate-set
+  classification labels.
+- Primary BC dataset:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_primary_short_rollout.npz`.
+  Counts: primary samples `30`, starts `10`, sequence steps `[0, 1, 2]`,
+  padded candidate rows `1920`, `D_raw=91`, `D_model=16`, and valid primary
+  labels `30`.
+- Quality/split results: `strict_keep=30`, `moderate_keep=30`,
+  `analysis_only=30`; split policy is leave-one-start-out plus
+  split-by-start-variant (`train=21`, `val=6`, `test=3`) with `10`
+  leave-one-start-out folds.
+- Additional outputs include shadow multilabel, one-action reference, and
+  combined research-view datasets; feature stats at
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/normalization_stats.npz`;
+  visual QA HTML at
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_index.html`;
+  dataset card at
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_card.md`.
+- Forbidden field audit passed: no target/ground-truth/future-observed fields
+  are used as BC features, labels, scores, or filters. Prediction and
+  uncertainty remain recorded candidate features only and were not written
+  into observed_state.
+- Forward-only smoke ran with CE loss `4.157931327819824`; optimizer step,
+  backward, model save, and checkpoint creation were all false.
+- Source USD, fixed USD, checkpoint, Stage 4A-6.13 dataset/manifest, and prior
+  6.7/6.8/6.11/6.12 datasets were unchanged. Git large artifact policy
+  remained clean.
+- Recommended next:
+  review the Stage 4A-7.0 dataset QA package, then explicitly approve either
+  Stage 4A-7.1 BC dry-run/tiny training design or a second bounded short
+  rollout with small variations. Do not jump directly to long rollout, full BC
+  training, or RL/GDPO/PPO.
+
 - Stage 4A-6.13a Isaac close timeout lifecycle hardening is complete and
   validated. Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613a_isaac_close_guard_hardening`.

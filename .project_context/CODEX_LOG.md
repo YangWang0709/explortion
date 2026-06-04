@@ -5725,3 +5725,66 @@ Stage 4A-6.12 uncertainty-as-exploration-bonus decision pilot result:
   review the 6.12 decision-only audit/visual package. If accepted, design an
   explicitly approved short rollout using `uncertainty_bonus_composite_beta8`.
   Do not jump directly to long rollout.
+Stage 4A-7.0 BC dataset design/preparation result:
+
+- Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation`.
+- Added source:
+  `sim_explorer/bc_dataset_schema_utils.py`,
+  `sim_explorer/prepare_stage4a70_bc_dataset_design.py`,
+  `sim_explorer/test_stage4a70_bc_dataset_design.py`, and
+  `ssc_exploration/ssc_network/il/sim_expert_bc_dataset.py`.
+- Scope:
+  BC dataset schema/converter/audit preparation only. No real Isaac startup,
+  capture, map_predict, SSCNet inference, action execution, rollout, long
+  rollout, BC/IL training, optimizer step, model checkpoint, or RL/GDPO/PPO
+  occurred.
+- Primary label policy:
+  `stage4a613_uncertainty_bonus_executed_primary`, using Stage 4A-6.13
+  executed `uncertainty_bonus_composite_beta8` primary actions.
+- Dataset counts:
+  primary samples `30`, starts `10`, sequence steps `[0, 1, 2]`, padded
+  candidate rows `1920`, `D_raw=91`, `D_model=16`, valid primary labels `30`.
+  Quality masks: `strict_keep=30`, `moderate_keep=30`,
+  `analysis_only=30`.
+- Dataset outputs:
+  primary
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_primary_short_rollout.npz`,
+  shadow multilabel
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_shadow_multilabel.npz`,
+  one-action reference
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_one_action_reference.npz`,
+  combined research view
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_combined_research_view.npz`.
+- Feature/split/visual outputs:
+  feature stats
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/normalization_stats.npz`;
+  split assignments
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/split_assignments.csv`;
+  visual HTML
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_index.html`.
+- Split policy:
+  leave-one-start-out plus split-by-start-variant (`train=21`, `val=6`,
+  `test=3`) with `10` leave-one-start-out folds.
+- Audits:
+  forbidden field audit passed; no target/ground-truth/future-observed feature,
+  label, score, or filter use. Prediction and uncertainty remained
+  recorded candidate features only and were not written into observed_state.
+- Forward-only smoke:
+  ran with CE loss `4.157931327819824`; optimizer step `false`, backward
+  `false`, model saved `false`, checkpoint created `false`.
+- Validation:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a70_py_compile.log`,
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a70_bc_dataset_design_preparation.log`,
+  and
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a70_bc_dataset_design_preparation_test.log`.
+  Test reported `all_passed=true`.
+- Hash safety:
+  source USD, fixed USD, checkpoint, Stage 4A-6.13 dataset/manifest, and prior
+  6.7/6.8/6.11/6.12 datasets unchanged. Git large artifact policy remained
+  clean.
+- Recommended next:
+  review the Stage 4A-7.0 dataset QA package. If accepted, explicitly approve
+  Stage 4A-7.1 BC dry-run/tiny training design or choose a second bounded
+  short rollout with small variations. Do not jump directly to long rollout,
+  full BC training, or RL/GDPO/PPO.

@@ -3,6 +3,56 @@ Updated: 2026-06-04
 
 Current:
 
+- Stage 4A-7.0 BC dataset design/preparation is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation`.
+- Completed task:
+  built an offline BC-ready candidate-set dataset schema/converter/audit
+  package from existing validated expert artifacts. This was not BC training,
+  not IL training, not rollout, and not policy checkpointing.
+- Negative scope:
+  no real Isaac startup, no capture, no map_predict, no SSCNet inference, no
+  action execution, no rollout, no long rollout, no BC training, no optimizer
+  step, no model checkpoint, and no RL/GDPO/PPO.
+- Primary label policy:
+  `stage4a613_uncertainty_bonus_executed_primary`, preserving Stage 4A-6.13
+  executed `uncertainty_bonus_composite_beta8` actions as the default BC
+  candidate-set labels.
+- Dataset counts:
+  primary samples `30`, starts `10`, sequence steps `[0, 1, 2]`, padded
+  candidate rows `1920`, `D_raw=91`, `D_model=16`, valid primary labels `30`.
+  Quality masks: `strict_keep=30`, `moderate_keep=30`,
+  `analysis_only=30`.
+- Split policy:
+  leave-one-start-out plus split-by-start-variant (`train=21`, `val=6`,
+  `test=3`) with `10` leave-one-start-out folds.
+- Key outputs:
+  primary dataset
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_primary_short_rollout.npz`;
+  shadow dataset
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_shadow_multilabel.npz`;
+  one-action reference dataset
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_one_action_reference.npz`;
+  feature stats
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/normalization_stats.npz`;
+  visual HTML
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_design_preparation/bc_dataset_index.html`.
+- Audits:
+  forbidden field audit passed; no target/ground-truth/future-observed feature,
+  label, score, or filter use. Prediction and uncertainty remained
+  candidate-feature records only, with no observed_state writeback.
+- Forward-only smoke:
+  ran with CE loss `4.157931327819824`; optimizer step `false`, backward
+  `false`, model saved `false`, checkpoint created `false`.
+- Hash safety:
+  source USD, fixed USD, checkpoint, Stage 4A-6.13 dataset/manifest, and prior
+  6.7/6.8/6.11/6.12 datasets unchanged.
+- Current recommended next task:
+  review the Stage 4A-7.0 dataset QA package. If accepted, explicitly approve
+  Stage 4A-7.1 BC dry-run/tiny training design, or choose a second bounded
+  short rollout with small variations for data expansion. Do not jump directly
+  to long rollout, full BC training, or RL/GDPO/PPO.
+
 - Stage 4A-6.13a Isaac close timeout lifecycle hardening is complete.
   Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613a_isaac_close_guard_hardening`.
