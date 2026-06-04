@@ -3,6 +3,53 @@ Updated: 2026-06-04
 
 Current:
 
+- Stage 4A-6.9 bounded two-frame lambda48 pilot is complete. Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot`.
+- Validated counts:
+  `start_count=10`, `frame_count=20`, `capture_count=20`,
+  `executed_action_count=10`, `map_predict_calls=20`,
+  `predictor_loaded_once=true`, `sscnet_inference_called=true`,
+  `exactly_one_action_per_start=true`, `second_action_count=0`,
+  `third_frame_count=0`, `continuous_rollout_executed=false`, and
+  `long_rollout_executed=false`.
+  Isaac startup count is `1`; `simulation_app.close()` hung after all 20
+  frame captures completed, so the process was terminated and a recovery run
+  reused the captured files without a second Isaac startup.
+- Lambda48 formula stayed:
+  `gain_exp / cost + 48 * minmax(source_occ_free)`, `lambda_sc=48`,
+  per-frame/per-start valid candidate/yaw min-max normalization, reachable
+  frontier candidate selection, top_n `16`.
+- Frame1 comparison:
+  lambda48 vs measured shadow produced `same_as_measured=4`,
+  `local_jitter=4`, `distinct_nonmeasured_branch=2`,
+  `no_valid_candidate=0`, `low_cost_artifact=0`, and
+  `historical_prior_basin=0`. Frame1 reproduced Stage 4A-6.8 for all 10
+  starts with mean action delta `0.0m` and mean yaw delta `0.0rad`.
+- Frame2 diagnostic comparison:
+  lambda48 vs measured shadow produced `same_as_measured=1`,
+  `local_jitter=7`, `distinct_nonmeasured_branch=2`,
+  `no_valid_candidate=0`, `low_cost_artifact=0`, and
+  `historical_prior_basin=0`. No second action was executed.
+- Observed delta and audits:
+  total Frame1-to-Frame2 newly observed voxels `132834`, mean `13283.4`, min
+  `3894`, max `22129`. Frame2 candidate health passed with min candidate
+  count `17`, mean candidate count `58.8`, and no valid-candidate failures.
+  Prediction safety, dataset integrity, safety audit, expert data quality
+  audit, and two-frame stability audit all passed. The only warning class is
+  `candidate_all_local`.
+- Key artifacts:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot/expert_dataset_two_frame.npz`,
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot/expert_two_frame_index.html`,
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot/expert_two_frame_flythrough.mp4`,
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot/expert_data_quality_audit.md`,
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot/two_frame_stability_audit.md`,
+  and comparisons to Stage 4A-6.7 and Stage 4A-6.8.
+- Current recommended next task:
+  review the 6.9 two-frame quality visual package. If clean, choose either BC
+  dataset design/preparation or an explicitly approved short rollout. Do not
+  jump directly to long rollout unless explicitly approved; any future long
+  rollout must include expert data quality visualization and audit outputs.
+
 - Stage 4A-6.8 map_predict/lambda48 expert pilot is complete. Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot`.
 - Validated counts:

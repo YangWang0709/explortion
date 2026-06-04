@@ -3,6 +3,70 @@ Updated: 2026-06-04
 
 Current state:
 
+- Stage 4A-6.9 bounded two-frame lambda48 pilot is complete and validated.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot`.
+- Runtime/result:
+  `start_count=10`, `frame_count=20`, `capture_count=20`,
+  `executed_action_count=10`, `map_predict_calls=20`,
+  `sscnet_inference_called=true`, `predictor_loaded_once=true`,
+  `exactly_one_action_per_start=true`, `second_action_count=0`,
+  `third_frame_count=0`, `continuous_rollout_executed=false`, and
+  `long_rollout_executed=false`.
+  Isaac startup count is recorded as `1`: the first run completed all 20
+  frame captures, then `simulation_app.close()` hung. The process was
+  terminated only after the captures were finalized on disk; the recovery run
+  reused those captures and did not start Isaac a second time.
+- Lambda48 formula stayed:
+  `gain_exp / cost + 48 * minmax(source_occ_free)`, with `lambda_sc=48`.
+  Prediction stayed read-only and was used only for the lambda48 information
+  bonus, not for traversability, collision, ray blocking, candidate validity,
+  edge validity, target/ground-truth scoring, or future-observed scoring.
+- Frame1 lambda48 vs measured shadow:
+  `same_as_measured=4`, `local_jitter=4`,
+  `distinct_nonmeasured_branch=2`, `no_valid_candidate=0`,
+  `low_cost_artifact=0`, and `historical_prior_basin=0`.
+  Stage 4A-6.9 Frame1 reproduced Stage 4A-6.8 lambda48 decisions for all
+  10 starts: `frame1_reproduced_stage4a68_count=10`,
+  mean action delta `0.0m`, mean yaw delta `0.0rad`.
+- Frame2 diagnostic lambda48 vs measured shadow:
+  `same_as_measured=1`, `local_jitter=7`,
+  `distinct_nonmeasured_branch=2`, `no_valid_candidate=0`,
+  `low_cost_artifact=0`, and `historical_prior_basin=0`.
+  Frame2 remained diagnostic only; no second action was executed.
+- Observed delta and stability:
+  total newly observed voxels from Frame1 to Frame2 were `132834`, mean
+  `13283.4`, min `3894`, and max `22129`. Frame2 candidate health passed with
+  min candidate count `17`, mean candidate count `58.8`, and
+  `no_valid_candidate_count=0`. Two-frame stability audit passed and reported
+  `unsafe_extension_suggested=false` and `frame2_regression=false`.
+- Safety and quality:
+  `prediction_safety_audit.passed=true`, `dataset_integrity_report.passed=true`,
+  `safety_audit.passed=true`, `expert_data_quality_audit.passed=true`, and
+  `two_frame_stability_audit.passed=true`. The only quality warning class is
+  `candidate_all_local`. Checkpoint, source USD, fixed USD, and source
+  observed_state are unchanged.
+- Main artifacts:
+  dataset `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot/expert_dataset_two_frame.npz`,
+  manifest `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot/expert_dataset_manifest.jsonl`,
+  HTML `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot/expert_two_frame_index.html`,
+  flythrough `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot/expert_two_frame_flythrough.mp4`,
+  and comparison reports
+  `stage4a69_vs_stage4a68_comparison.*` and
+  `stage4a69_vs_stage4a67_comparison.*`.
+- Stage 4A-6.9 vs Stage 4A-6.7:
+  Frame1 lambda48 action changed count remains `4`, mean action distance is
+  `0.3074937611088073m`, and mean yaw delta is `0.6706520898196431rad`.
+- Gates remain closed:
+  no long rollout, no second action, no third frame, no full expert dataset,
+  no RL/GDPO/PPO/BC/IL, no training, no replay buffer, no policy checkpoint,
+  no prediction writeback, and no USD/source observed_state modification.
+- Recommended next:
+  if this 6.9 evidence is accepted, choose BC dataset design/preparation or an
+  explicitly approved short rollout. Do not jump directly to long rollout
+  unless explicitly approved; when long rollout starts, it must include expert
+  data quality visualization and audit outputs.
+
 - Stage 4A-6.8 map_predict/lambda48 expert pilot is complete and validated.
   Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a68_map_predict_lambda48_expert_pilot`.

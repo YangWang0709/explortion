@@ -1,6 +1,83 @@
 Codex Log
 Updated: 2026-06-04
 
+Stage 4A-6.9 bounded two-frame lambda48 pilot actions:
+
+- Re-read required project context and Git docs:
+  `.project_context/CURRENT_STATE.md`, `.project_context/TODO.md`,
+  `.project_context/CODEX_LOG.md`, `README.md`, `ARTIFACTS.md`,
+  `ENVIRONMENT.md`, and `GIT_INITIALIZATION_REPORT.md`.
+- Re-read required Stage 4A-6.6c camera-pose-fix artifacts, Stage 4A-6.7
+  measured-only pilot summary/dataset/integrity/safety outputs, and Stage
+  4A-6.8 lambda48 pilot summary/dataset/manifest/comparison/prediction-safety
+  and expert-quality outputs. Confirmed Stage 4A-6.8 was complete with
+  10 starts, 10 captures, 10 map_predict calls, one action per start,
+  prediction safety passed, expert data quality passed, and only
+  `candidate_all_local` warnings.
+- Implemented:
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/run_stage4a69_bounded_two_frame_lambda48_pilot.py`
+  and
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/test_stage4a69_bounded_two_frame_lambda48_pilot.py`.
+- Ran py_compile in `env_isaaclab` for the new runner/test plus
+  `scene_factory.py`, `isaac_map_predictor.py`, `offline_mini_rrt_tree.py`,
+  and `sim_prediction_layer.py`:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a69_py_compile.log`.
+- Ran the Stage 4A-6.9 bounded two-frame pilot on the fixed USD using the same
+  10 interior starts. Isaac started exactly once and completed all 20 required
+  RGB/depth captures: Frame1 start pose and Frame2 post-lambda48-action pose
+  for each start. `simulation_app.close()` then hung; after the capture files
+  were finalized on disk, the process was terminated. The recovery run reused
+  those captures and did not start Isaac again.
+- The recovery run loaded SSCNet predictor once from
+  `/home/ubuntu22/sc_explorer_ws/checkpoints/full_train/cpBest_SSCNet_NYU_full_train.pth.tar`
+  and ran exactly 20 map_predict/SSCNet calls, one for each frame, with
+  `alignment_convention=code_consistent_v1` and `tau=0.1`.
+- Lambda48 scoring used:
+  `gain_exp / cost + 48 * minmax(source_occ_free)`.
+  `source_occ_free` is the raw visible predicted-unmeasured voxel count from
+  the read-only prediction layer. Prediction was not used for traversability,
+  collision, ray blocking, candidate validity, edge validity, target/ground
+  truth scoring, or future-observed scoring.
+- Output directory:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a69_bounded_two_frame_lambda48_pilot`.
+  Generated the required two-frame dataset/report/visual package, including
+  `expert_dataset_two_frame.npz`, `expert_dataset_manifest.jsonl`,
+  `expert_two_frame_index.html`, `expert_two_frame_flythrough.mp4`, per-start
+  Frame1/Frame2 RGB/depth/observed/prediction/top-candidate/action-quality
+  files, dataset-level plots, prediction safety audit, expert data quality
+  audit, two-frame stability audit, and comparisons to Stage 4A-6.7 and 6.8.
+- Result:
+  `start_count=10`, `frame_count=20`, `capture_count=20`,
+  `executed_action_count=10`, and `map_predict_calls=20`.
+  Frame1 branch counts were `same_as_measured=4`, `local_jitter=4`,
+  `distinct_nonmeasured_branch=2`, and `no_valid_candidate=0`.
+  Frame2 diagnostic branch counts were `same_as_measured=1`,
+  `local_jitter=7`, `distinct_nonmeasured_branch=2`, and
+  `no_valid_candidate=0`. Low-cost artifact and historical-prior-basin counts
+  were `0`.
+- Observed delta and comparisons:
+  Frame1-to-Frame2 total newly observed voxels were `132834`, mean `13283.4`,
+  min `3894`, and max `22129`. Stage 4A-6.9 Frame1 reproduced Stage 4A-6.8
+  for all 10 starts with mean action delta `0.0m` and mean yaw delta `0.0rad`.
+  Stage 4A-6.9 vs Stage 4A-6.7 action changed count was `4`, mean action
+  distance `0.3074937611088073m`, and mean yaw delta
+  `0.6706520898196431rad`.
+- Validation passed:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a69_bounded_two_frame_lambda48_pilot_test.log`
+  reported `all_passed: true`. Dataset integrity, safety audit, prediction
+  safety audit, expert data quality audit, and two-frame stability audit all
+  passed.
+- Safety/negative scope stayed clean:
+  no long rollout, no continuous rollout, no second action, no third frame, no
+  full expert dataset, no RL/GDPO/PPO/BC/IL, no training, no replay buffer, no
+  policy checkpoint, no checkpoint modification, no source USD modification,
+  no fixed USD modification, no source observed_state modification, and no
+  prediction writeback.
+- Current next small task:
+  review Stage 4A-6.9 visual/quality package, then choose BC dataset
+  design/preparation or an explicitly approved short rollout. Do not jump
+  directly to long rollout without explicit approval.
+
 Stage 4A-6.8 map_predict/lambda48 expert pilot actions:
 
 - Re-read required project context and Git docs:
