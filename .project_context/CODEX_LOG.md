@@ -5476,3 +5476,64 @@ Stage 4A-6.10a dense prediction uncertainty artifact regeneration result:
 - Next faithful step:
   Stage 4A-6.11 uncertainty-aware lambda pilot design, bounded one-action
   only, not rollout. Do not jump to long rollout.
+
+Stage 4A-6.11 uncertainty-aware lambda one-action pilot result:
+
+- Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a611_uncertainty_aware_lambda_one_action_pilot`.
+- Added source:
+  `sim_explorer/run_stage4a611_uncertainty_aware_lambda_one_action_pilot.py`
+  and
+  `sim_explorer/test_stage4a611_uncertainty_aware_lambda_one_action_pilot.py`.
+- Primary formula:
+  `confidence_gated_lambda48_v1` =
+  `gain_exp / cost + 48 * minmax(source_occ_free * candidate_confidence_mean)`.
+  Shadow formulas: measured-only, lambda48 baseline, confidence-margin gated,
+  uncertainty bonus beta8, uncertainty penalty beta8, and entropy penalty
+  beta8.
+- Runtime/result:
+  `start_count=10`, `frame_count=10`, `capture_count=10`,
+  `map_predict_calls=10`, `dense_uncertainty_artifacts=10`,
+  `executed_action_count=10`, `exactly_one_action_per_start=true`,
+  `second_action_count=0`, `third_frame_count=0`,
+  `continuous_rollout_executed=false`, and `long_rollout_executed=false`.
+  The stage finalizer did not start a new Isaac process; it reused validated
+  Stage 4A-6.8 one-frame captures and Stage 4A-6.10a dense uncertainty
+  artifacts.
+- Candidate uncertainty:
+  `candidate_uncertainty_rows=469` across measured-valid reconstructed
+  reachable-frontier candidates. Candidate confidence/entropy/margin means
+  were `0.8604786937920237`, `0.1888305449472253`, and
+  `0.8094706315352114`. Selected primary confidence/entropy/margin means were
+  `0.8796395396528542`, `0.19162816140892908`, and
+  `0.8282547902721005`.
+- Decision comparison:
+  primary vs measured-only produced `same_as_measured=2`, `local_jitter=6`,
+  `distinct_nonmeasured_branch=2`, `no_valid_candidate=0`.
+  Action changed count is `6` vs measured-only, `0` vs 6.11 lambda48 baseline,
+  and `2` vs Stage 4A-6.8 / Stage 4A-6.9 Frame1. Mean action distance vs
+  lambda48 is `0.009999999999999787m`; mean yaw delta is
+  `0.06747409422235524rad`.
+- Main artifacts:
+  dataset
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a611_uncertainty_aware_lambda_one_action_pilot/expert_dataset_uncertainty_lambda.npz`,
+  HTML
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a611_uncertainty_aware_lambda_one_action_pilot/expert_uncertainty_lambda_index.html`,
+  MP4
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a611_uncertainty_aware_lambda_one_action_pilot/expert_uncertainty_lambda_flythrough.mp4`.
+- Validation:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a611_py_compile.log`,
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a611_uncertainty_aware_lambda_one_action_pilot.log`,
+  and
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a611_uncertainty_aware_lambda_one_action_pilot_test.log`.
+  The validation script reported `all_passed=true`.
+- Negative scope stayed clean:
+  no rollout, no second action, no third frame, no long rollout, no full
+  expert dataset, no BC/IL/RL/GDPO/PPO, no training, no replay buffer, no
+  policy checkpoint, no prediction writeback, no uncertainty writeback, no
+  prediction/uncertainty safety-use leakage, and no source/fixed
+  USD/checkpoint/source observed_state/prior dataset modification.
+- Next faithful step:
+  review the 6.11 uncertainty-aware visual package and choose BC dataset
+  design/preparation or an explicitly approved short rollout. Do not jump
+  directly to long rollout.

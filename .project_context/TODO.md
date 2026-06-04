@@ -3,6 +3,46 @@ Updated: 2026-06-04
 
 Current:
 
+- Stage 4A-6.11 uncertainty-aware lambda one-action pilot is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a611_uncertainty_aware_lambda_one_action_pilot`.
+- Completed task:
+  conservative uncertainty-aware primary formula
+  `confidence_gated_lambda48_v1` was applied over measured-valid
+  reachable-frontier candidates using real dense confidence/entropy/margin
+  features from Stage 4A-6.10a. Shadows saved: measured-only, lambda48
+  baseline, confidence-margin gated, uncertainty bonus beta8, uncertainty
+  penalty beta8, and entropy penalty beta8.
+- Counts:
+  `start_count=10`, `frame_count=10`, `capture_count=10`,
+  `map_predict_calls=10`, `dense_uncertainty_artifacts=10`,
+  `executed_action_count=10`, `second_action_count=0`,
+  `third_frame_count=0`, and `long_rollout_executed=false`.
+  No new Isaac startup was needed; the stage reused validated 6.8 captures and
+  6.10a dense artifacts.
+- Decision summary:
+  primary vs measured-only produced `same_as_measured=2`, `local_jitter=6`,
+  `distinct_nonmeasured_branch=2`, `no_valid_candidate=0`.
+  Action changed counts are `6` vs measured-only, `0` vs the 6.11 lambda48
+  baseline shadow, and `2` vs Stage 4A-6.8 / Stage 4A-6.9 Frame1.
+- Uncertainty summary:
+  candidate rows `469`; candidate confidence/entropy/margin means
+  `0.8604786937920237`, `0.1888305449472253`, and
+  `0.8094706315352114`. Selected primary confidence/entropy/margin means
+  `0.8796395396528542`, `0.19162816140892908`, and
+  `0.8282547902721005`.
+- Safety reminder:
+  no rollout, no second action, no third frame, no long rollout, no
+  BC/IL/RL/GDPO/PPO, no training, no prediction writeback, no uncertainty
+  writeback, no source/fixed USD/checkpoint/prior dataset modification, and
+  no prediction/uncertainty use for traversability, collision, ray blocking,
+  or candidate validity.
+- Current recommended next task:
+  review the 6.11 uncertainty-aware visual package and choose BC dataset
+  design/preparation or an explicitly approved short rollout. Do not jump
+  directly to long rollout; any future rollout must include expert data
+  quality visualization and audit outputs.
+
 - Stage 4A-6.10a dense prediction uncertainty artifact regeneration is
   complete. Dense artifact output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610a_dense_prediction_uncertainty_artifacts`.

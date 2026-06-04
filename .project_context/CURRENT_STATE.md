@@ -3,6 +3,70 @@ Updated: 2026-06-04
 
 Current state:
 
+- Stage 4A-6.11 uncertainty-aware lambda one-action pilot is complete and
+  validated. Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a611_uncertainty_aware_lambda_one_action_pilot`.
+- Primary formula:
+  `confidence_gated_lambda48_v1`, i.e.
+  `gain_exp / cost + 48 * minmax(source_occ_free * candidate_confidence_mean)`.
+  Shadow formulas saved: measured-only, lambda48 baseline,
+  confidence-margin gated, uncertainty bonus beta8, uncertainty penalty beta8,
+  and entropy penalty beta8.
+- Runtime/result:
+  `start_count=10`, `frame_count=10`, `capture_count=10`,
+  `map_predict_calls=10`, `dense_uncertainty_artifacts=10`,
+  `executed_action_count=10`, `exactly_one_action_per_start=true`,
+  `second_action_count=0`, `third_frame_count=0`,
+  `continuous_rollout_executed=false`, and `long_rollout_executed=false`.
+  No new Isaac process was started for this finalizer; it reused the validated
+  Stage 4A-6.8 one-frame captures and Stage 4A-6.10a dense uncertainty
+  artifacts. No second Isaac startup, Frame2, or rollout was introduced.
+- Candidate uncertainty:
+  469 measured-valid candidate rows were reconstructed across the 10 starts
+  from the 64 requested reachable-frontier candidates, each with real
+  candidate-visible dense confidence/entropy/margin features. Candidate
+  confidence/entropy/margin means are `0.8604786937920237`,
+  `0.1888305449472253`, and `0.8094706315352114`. Selected primary
+  confidence/entropy/margin means are `0.8796395396528542`,
+  `0.19162816140892908`, and `0.8282547902721005`.
+- Decision comparison:
+  primary vs measured produced `same_as_measured=2`, `local_jitter=6`,
+  `distinct_nonmeasured_branch=2`, and `no_valid_candidate=0`.
+  Action changed counts are `6` vs measured-only, `0` vs the 6.11 lambda48
+  baseline shadow, and `2` vs Stage 4A-6.8 / Stage 4A-6.9 Frame1. Mean action
+  distance vs lambda48 is `0.009999999999999787m`; mean yaw delta is
+  `0.06747409422235524rad`.
+- Safety and quality:
+  `prediction_safety_audit.passed=true`,
+  `uncertainty_safety_audit.passed=true`,
+  `dataset_integrity_report.passed=true`, and
+  `expert_data_quality_audit.passed=true`. Gates remain closed for rollout,
+  second action, third frame, long rollout, BC/IL/RL/GDPO/PPO, training,
+  replay buffer, policy checkpoint, prediction writeback, uncertainty
+  writeback, and prediction/uncertainty traversability, collision, ray
+  blocking, or candidate-validity use. Source USD, fixed USD, checkpoint,
+  source observed_state, and prior 6.8/6.9 datasets were unchanged.
+- Main artifacts:
+  dataset
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a611_uncertainty_aware_lambda_one_action_pilot/expert_dataset_uncertainty_lambda.npz`,
+  manifest
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a611_uncertainty_aware_lambda_one_action_pilot/expert_dataset_manifest.jsonl`,
+  HTML
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a611_uncertainty_aware_lambda_one_action_pilot/expert_uncertainty_lambda_index.html`,
+  and MP4
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a611_uncertainty_aware_lambda_one_action_pilot/expert_uncertainty_lambda_flythrough.mp4`.
+- Validation:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a611_py_compile.log`,
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a611_uncertainty_aware_lambda_one_action_pilot.log`,
+  and
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a611_uncertainty_aware_lambda_one_action_pilot_test.log`.
+  Test reported `all_passed=true`.
+- Recommended next:
+  review the uncertainty-aware visual package and choose BC dataset
+  design/preparation or an explicitly approved short rollout. Do not jump
+  directly to long rollout; any future short/long rollout must include expert
+  data quality visualization and audit outputs.
+
 - Stage 4A-6.10a dense prediction uncertainty artifact regeneration is
   complete and validated. Primary output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a610a_dense_prediction_uncertainty_artifacts`.
