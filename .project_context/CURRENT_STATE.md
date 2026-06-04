@@ -3,6 +3,63 @@ Updated: 2026-06-04
 
 Current state:
 
+- Stage 4A-6.13 uncertainty-bonus bounded short rollout pilot is complete and
+  validated. Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613_uncertainty_bonus_short_rollout_pilot`.
+- This was the explicitly approved short rollout, not a long rollout and not
+  a full expert dataset. Counts: `start_count=10`,
+  `max_decision_steps_per_start=3`, `decision_frame_count=30`,
+  `terminal_frame_count=10`, `capture_count=40`, `map_predict_calls=30`,
+  and `executed_action_count=30`. Isaac startup count was `1`; after all
+  files were finalized, `simulation_app.close()` hung and the process was
+  terminated without a second Isaac startup.
+- Primary expert formula was `uncertainty_bonus_composite_beta8`:
+  `gain_exp / cost + 48 * minmax(source_occ_free) + 8 * uncertainty_composite`,
+  where `uncertainty_composite =
+  0.4*minmax(candidate_uncertain_fraction) +
+  0.4*minmax(candidate_entropy_mean) +
+  0.2*minmax(1 - candidate_margin_mean)`. Minmax scope was per decision
+  frame over measured-valid candidates only.
+- Rollout result: observed ratio mean moved from `0.2444367224367224` to
+  `0.262136036036036`; total newly observed voxels were `412571`, mean
+  `41257.1` per start. Done reasons were `max_steps_reached: 10`;
+  `no_valid_candidate_count=0`, `stuck_revisit_count=0`, and
+  `candidate_all_local_count=0`.
+- Decision comparison over all 30 decision frames:
+  action changed count `17` vs measured-only, `3` vs lambda48, `6` vs
+  confidence-gated, and `0` vs the Stage 4A-6.12 decision on step 0.
+  Branch counts vs measured were `same_as_measured=7`, `local_jitter=17`,
+  and `distinct_nonmeasured_branch=6`.
+- Selected uncertainty health: confidence mean/min
+  `0.8360315690272979 / 0.6457599577356558`, entropy mean/max
+  `0.23500558781373931 / 0.4559122721354167`, and margin mean/min
+  `0.7639459535016347 / 0.46364005667264346`. Low-cost artifact,
+  historical-prior basin, and formula-dominated-by-uncertainty counts were
+  all `0`.
+- Gates stayed closed: no long rollout, no full expert dataset, no
+  BC/IL/RL/GDPO/PPO, no training, no replay buffer, no policy checkpoint, no
+  prediction writeback, no uncertainty writeback, and no prediction/uncertainty
+  use for traversability, collision, ray blocking, candidate validity, or edge
+  validity. Source USD, fixed USD, checkpoint, and prior 6.7/6.8/6.9/6.10a/
+  6.11/6.12 datasets were unchanged.
+- Validation passed:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a613_py_compile.log` and
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a613_uncertainty_bonus_short_rollout_pilot_test.log`.
+  Expert data quality, prediction safety, uncertainty safety, rollout safety,
+  runtime quality, and dataset integrity audits all passed with no warnings or
+  blockers.
+- Main artifacts: dataset
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613_uncertainty_bonus_short_rollout_pilot/short_rollout_dataset_uncertainty_bonus.npz`,
+  HTML
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613_uncertainty_bonus_short_rollout_pilot/short_rollout_uncertainty_bonus_index.html`,
+  and MP4
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613_uncertainty_bonus_short_rollout_pilot/short_rollout_flythrough.mp4`.
+- Recommended next:
+  review the 6.13 visual/audit package, then choose either BC dataset
+  design/preparation or a second explicitly approved short rollout with small
+  variations. Do not jump directly to long rollout; any future long rollout
+  must include expert data quality visualization/audit outputs.
+
 - Stage 4A-6.12 uncertainty-as-exploration-bonus decision pilot is complete
   and validated. Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a612_uncertainty_exploration_bonus_pilot`.

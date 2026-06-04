@@ -1,6 +1,84 @@
 Codex Log
 Updated: 2026-06-04
 
+Stage 4A-6.13 uncertainty-bonus short rollout pilot actions:
+
+- Re-read required project context and Git docs:
+  `.project_context/CURRENT_STATE.md`, `.project_context/TODO.md`,
+  `.project_context/CODEX_LOG.md`, `README.md`, `ARTIFACTS.md`,
+  `ENVIRONMENT.md`, and `GIT_INITIALIZATION_REPORT.md`.
+- Re-read and loaded required Stage 4A-6.6c, 6.7, 6.8, 6.9, 6.10a, 6.11,
+  and 6.12 artifacts, including JSON summaries/audits, CSV decisions, and NPZ
+  datasets. Confirmed Stage 4A-6.12 was complete with
+  `recommended_uncertainty_bonus_formula=uncertainty_bonus_composite_beta8`,
+  `recommended_beta=8`, `uncertainty_bonus_runtime_ready=true`, risk and
+  quality audits passed, and no warnings/blockers.
+- Implemented:
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/run_stage4a613_uncertainty_bonus_short_rollout_pilot.py`
+  and
+  `/home/ubuntu22/sc_explorer_ws/sim_explorer/test_stage4a613_uncertainty_bonus_short_rollout_pilot.py`.
+- Ran py_compile in `env_isaaclab` for the new runner/test plus
+  `scene_factory.py`, `isaac_map_predictor.py`, `sim_prediction_layer.py`,
+  `prediction_uncertainty_utils.py`, and `offline_mini_rrt_tree.py`:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a613_py_compile.log`.
+- Ran the Stage 4A-6.13 bounded short rollout on the fixed localized USD using
+  the same 10 corrected interior starts. Isaac started exactly once. The
+  runner captured each decision frame, updated observed_state from measured
+  depth only, ran read-only map_predict once per decision frame, saved dense
+  uncertainty artifacts, computed candidate-level uncertainty, scored the
+  measured-only/lambda48/confidence-gated shadows plus the
+  `uncertainty_bonus_composite_beta8` primary, and executed one primary action
+  by moving to the selected next capture pose. Each start also got one
+  terminal QA capture with no map_predict, no scoring, and no action.
+- Runtime counts:
+  `start_count=10`, `max_decision_steps_per_start=3`,
+  `decision_frame_count=30`, `terminal_frame_count=10`,
+  `capture_count=40`, `map_predict_calls=30`,
+  `dense_uncertainty_artifacts=30`, and `executed_action_count=30`.
+  `simulation_app.close()` hung after all required files were finalized;
+  the process was terminated without starting Isaac a second time.
+- Output directory:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a613_uncertainty_bonus_short_rollout_pilot`.
+  Generated the required dataset/report/visual package, including
+  `short_rollout_dataset_uncertainty_bonus.npz`,
+  `short_rollout_manifest.jsonl`, decision/shadow tables, per-start and
+  per-step summaries, per-step RGB/depth/observed/dense/candidate/action
+  quality files, topdown overlays, score bars, aggregate plots,
+  `short_rollout_uncertainty_bonus_index.html`, and
+  `short_rollout_flythrough.mp4`.
+- Result:
+  observed ratio mean start/end `0.2444367224367224 ->
+  0.262136036036036`; total newly observed voxels `412571`, mean `41257.1`
+  per start. Done reasons were `max_steps_reached: 10`. No no-valid-candidate,
+  repeated/stuck target, candidate-all-local, low-cost artifact, historical
+  prior basin, or formula-dominated-by-uncertainty cases occurred.
+- Decision comparison:
+  action changed count `17` vs measured-only, `3` vs lambda48, `6` vs
+  confidence-gated, and `0` vs Stage 4A-6.12 step-0 decision. Branch counts vs
+  measured were `same_as_measured=7`, `local_jitter=17`, and
+  `distinct_nonmeasured_branch=6`.
+- Selected uncertainty:
+  confidence mean/min `0.8360315690272979 / 0.6457599577356558`, entropy
+  mean/max `0.23500558781373931 / 0.4559122721354167`, and margin mean/min
+  `0.7639459535016347 / 0.46364005667264346`.
+- Validation passed:
+  `/home/ubuntu22/sc_explorer_ws/logs/stage4a613_uncertainty_bonus_short_rollout_pilot_test.log`
+  reported `all_passed=true`. Expert data quality, prediction safety,
+  uncertainty safety, rollout safety, runtime quality, and dataset integrity
+  audits all passed with no warnings or blockers.
+- Safety/negative scope stayed clean:
+  no long rollout, no full expert dataset, no BC/IL/RL/GDPO/PPO, no training,
+  no replay buffer, no policy checkpoint, no prediction writeback, no
+  uncertainty writeback, no source/fixed USD/checkpoint/prior dataset
+  modification, and no prediction/uncertainty use for traversability,
+  collision, ray blocking, candidate validity, edge validity,
+  target/ground-truth scoring, or future-observed scoring.
+- Current next small task:
+  review the 6.13 visual/audit package, then choose BC dataset
+  design/preparation or a second explicitly approved short rollout with small
+  variations. Do not jump directly to long rollout; any future long rollout
+  must include expert data quality visualization/audit outputs.
+
 Stage 4A-6.10 prediction uncertainty offline audit actions:
 
 - Re-read required project context and Git docs:
