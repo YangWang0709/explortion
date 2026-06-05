@@ -1,7 +1,320 @@
 Project: SC-Explorer SSCNet Stage 4A-6.6c-home-like-scene-v1-validation
-Updated: 2026-06-04
+Updated: 2026-06-06
 
 Current state:
+
+- Stage 4A-7.5 no-training primary-label policy next-step packet is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a75_no_training_primary_label_policy_next_step_packet`.
+- Result:
+  no training, no promotion, no checkpoint, no runtime, no rollout, and no
+  RL/GDPO/PPO. Current primary label rule remains Stage 4A-7.0 / Stage 4A-6.13
+  `expert_action_index_primary`; Stage 4A-7.2 remains candidate expansion only;
+  lambda48 remains shadow/baseline only.
+- Options:
+  A hold/no-promotion/no-training; B future no-training promotion implementation
+  design; C future primary-eligible bounded short rollout design; D manual
+  7.2 visual/audit review gate; E continued training hold.
+- Exact approval phrases: `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a75_no_training_primary_label_policy_next_step_packet/exact_approval_phrases_for_next_options.md`.
+
+- Active goal completion audit is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/active_goal_completion_audit_stage4a71_primary_label_constraints`.
+- Audit result:
+  `goal_completion_supported=True`, blockers `[]` across
+  `9` explicit requirements. Current lawful project state is
+  hold/no-promotion/no-training under the active constraints.
+- Boundary:
+  no runtime, training, optimizer step, checkpoint creation, long rollout, or
+  RL/GDPO/PPO occurred during this audit.
+
+- Stage 4A-7.4 no-training promotion policy decision packet QA review is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a74_no_training_promotion_policy_decision_packet_qa_review`.
+- QA result:
+  `qa_passed=True`, blockers `[]`. The packet decision remains
+  no promotion of Stage 4A-7.2 candidate labels into `expert_action_index_primary`
+  under the current hard primary-label rule.
+- Boundary:
+  no runtime, training, optimizer step, checkpoint creation, long rollout, or
+  RL/GDPO/PPO occurred. Lambda48 remains shadow/baseline only.
+
+- Stage 4A-7.4 no-training promotion policy decision packet is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a74_no_training_promotion_policy_decision_packet`.
+- Decision:
+  do not promote Stage 4A-7.2 candidate labels into `expert_action_index_primary`
+  under the current hard primary-label rule. Current BC primary remains
+  Stage 4A-7.0 `expert_action_index_primary`, tracing to Stage 4A-6.13
+  `uncertainty_bonus_composite_beta8` executed actions.
+- Evidence:
+  Stage 4A-7.3 promotion gate QA and adapter QA passed; Stage 4A-7.2 adapter
+  shape is `[30, 64, 16]`; lambda48 differs from
+  uncertainty-bonus labels on `7` samples and remains shadow/baseline only.
+- Boundary:
+  no runtime, training, optimizer step, checkpoint creation, long rollout, or
+  RL/GDPO/PPO occurred. Stage 4A-7.2 remains candidate expansion only unless a
+  future no-training promotion policy audit is explicitly approved.
+
+- Stage 4A-7.3 promotion-gate QA and Stage 4A-7.2 compact_v1 feature adapter QA are complete.
+  Gate QA output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a73_promotion_gate_qa_review`.
+  Adapter output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a73_stage4a72_compact_feature_adapter_no_training`.
+  Adapter QA output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a73_stage4a72_compact_feature_adapter_qa_review`.
+- Result:
+  Stage 4A-7.2 candidate expansion samples now have compact model features
+  `30 x 64 x 16`, valid uncertainty-bonus executed candidate labels, and
+  lambda48 shadow labels. The adapter intentionally has no
+  `expert_action_index_primary` field; `primary_bc_eligible_mask` is all false.
+- Boundary:
+  no runtime, training, optimizer step, checkpoint creation, long rollout, or
+  RL/GDPO/PPO occurred. The next conservative step is a no-training promotion
+  policy decision packet/audit, not BC training.
+
+- Stage 4A-7.2 bounded short rollout runtime execution and QA are complete.
+  Runtime output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a72_bounded_short_rollout_runtime`.
+  QA output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a72_bounded_short_rollout_runtime_qa_review`.
+- Runtime result:
+  `10` starts, `30` decision frames, `30` executed actions, `40` captures,
+  `30` map_predict calls, dataset integrity passed, primary-lambda48 differ
+  count `7`.
+- Safety:
+  no full BC training, checkpoint creation, long rollout, or RL/GDPO/PPO occurred.
+  Isaac close hung after finalization, required outputs were finalized first, and
+  the exact Stage 4A-7.2 child process group was terminated successfully.
+
+- Stage 4A-7.3 expanded BC dataset design/preparation is complete without training.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a73_expanded_bc_dataset_design_preparation_no_training`.
+- Result:
+  current BC primary-eligible samples remain `30` from Stage 4A-7.0 / Stage 4A-6.13
+  lineage. Stage 4A-7.2 contributes `30` uncertainty-bonus candidate expansion
+  samples, but they were not promoted to `expert_action_index_primary` in this
+  stage.
+- Reason:
+  this preserves the hard primary-label rule (`stage4a613_uncertainty_bonus_executed_primary`)
+  and keeps lambda48 shadow/baseline only while preparing the expansion view and
+  promotion gate.
+
+- Stage 4A-7.2 offline start-variation preflight QA review is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a72_offline_start_variation_preflight_qa_review`.
+- Result:
+  `qa_passed=True`, blockers `[]`, lambda48-primary text
+  violation count `0`, checkpoint-like files `[]`.
+- Interpretation:
+  offline packet is clean as a proposal/preflight artifact only. Runtime camera,
+  bounds, navigability, and close-guard behavior remain to be proven if a bounded
+  Stage 4A-7.2 short execution is run.
+
+- Stage 4A-7.2 offline small-variation start proposal and runtime preflight packet are complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a72_offline_start_variation_preflight`.
+- Status:
+  offline design/preflight only; proposed `10` starts from Stage 4A-6.13
+  initial poses with max translation jitter `0.162788m` and max yaw
+  jitter `8.000000` degrees.
+- Safety and lineage:
+  no Isaac, rollout, map_predict, training, checkpoint creation, or RL/GDPO/PPO
+  ran. Future execution must keep primary expert policy
+  `stage4a613_uncertainty_bonus_executed_primary` / `uncertainty_bonus_composite_beta8` and keep lambda48 shadow-only.
+
+- Stage 4A-7.2 second bounded short rollout data-expansion design is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a72_second_bounded_short_rollout_data_expansion_design`.
+- Purpose:
+  after weak/high-variance LOOSO tiny metrics, prioritize bounded data coverage
+  over deeper optimizer training.
+- Proposed bounds:
+  up to `10` starts, max `3` decision steps per start,
+  max `40` captures, primary expert
+  `stage4a613_uncertainty_bonus_executed_primary` / `uncertainty_bonus_composite_beta8`.
+- Boundary:
+  design-only, not run; close guard required; no long rollout, training,
+  checkpoint creation, RL/GDPO/PPO, or lambda48 primary-label use.
+
+- Stage 4A-7.1b LOOSO tiny evaluation QA review is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71b_looso_tiny_eval_qa_review`.
+- Result:
+  no-checkpoint fold-wise smoke passed, but metrics are weak/high-variance:
+  mean eval top1 `0.13333333333333333`, zero-top1 folds
+  `6`, eval loss mean/stdev
+  `3.9079074382781984`/`0.400544809512944`.
+- Interpretation:
+  training mechanics are validated; data volume/coverage is now the bottleneck.
+  Continue by designing bounded data expansion before any deeper training or
+  checkpoint stage.
+
+- Stage 4A-7.1b no-checkpoint LOOSO tiny evaluation execution is complete and validated.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71b_looso_tiny_eval_no_checkpoint`.
+- Runtime:
+  10 leave-one-start-out folds, one tiny epoch per fold, batch size
+  `8`, forward/backward/optimizer counts
+  `40/40/40`.
+- Safety and lineage:
+  no checkpoint/model/state_dict was saved, source/checkpoint hashes were
+  unchanged, `expert_action_index_primary` remained the primary label,
+  labels were not recomputed from lambda48, and no Isaac/rollout/RL ran.
+- Aggregate smoke metrics:
+  mean eval loss `3.9079074382781984`, mean eval
+  top1 `0.13333333333333333`, mean eval top3
+  `0.3666666666666666`, mean eval MRR
+  `0.2794476287343797`.
+- Interpretation boundary:
+  this is not full BC training and does not support policy-quality or
+  generalization claims. Continue with QA review of fold variance/failure modes.
+
+- Stage 4A-7.1b no-checkpoint leave-one-start-out tiny evaluation design is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71b_looso_tiny_eval_design_no_checkpoint`.
+- Design:
+  10 leave-one-start-out folds, one held-out start per fold, `27` train samples
+  and `3` eval samples per fold, using `expert_action_index_primary` only.
+- Boundary:
+  no execution yet in this design artifact, no checkpoint, no full BC training,
+  no rollout, no RL/GDPO/PPO. Under the user's no-question direction, the next
+  conservative action is the bounded no-checkpoint LOOSO tiny evaluation.
+
+- Stage 4A-7.1 bounded tiny dry-run QA review is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71_tiny_dryrun_qa_review`.
+- QA verdict:
+  `tiny_dryrun_qa_passed=true`. This validates the tiny run as a plumbing
+  smoke only: dataset load, mask, primary label, masked CE, backward, and
+  optimizer step ran without checkpoint creation or runtime side effects.
+- Interpretation boundary:
+  do not claim policy quality, generalization, full BC training readiness,
+  checkpoint readiness, rollout readiness, or RL/GDPO/PPO readiness from this
+  30-sample smoke.
+- Current next:
+  proceed conservatively with Stage 4A-7.1b no-checkpoint leave-one-start-out
+  tiny evaluation design, while preserving primary-label lineage and no-
+  checkpoint/no-full-training/no-rollout/no-RL constraints.
+
+- Stage 4A-7.1 bounded tiny dry-run execution with no checkpoint is complete and validated.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71_bounded_tiny_dryrun_no_checkpoint`.
+- Execution:
+  one bounded tiny epoch over the train split only, with batch size `8` and
+  train samples `21`. Forward/backward/optimizer
+  counts were `3/3/3`.
+- Label lineage:
+  primary labels were loaded from `expert_action_index_primary` as
+  `stage4a613_uncertainty_bonus_executed_primary` from Stage 4A-6.13 `uncertainty_bonus_composite_beta8`
+  executed actions. Labels were not recomputed from lambda48, and lambda48 was
+  not used for loss or optimizer.
+- Safety evidence:
+  no checkpoint was created, no model/state_dict was saved, no checkpoint-like
+  files exist in the output, source/checkpoint hashes were unchanged, and no
+  Isaac startup, capture, map_predict, SSCNet inference, action execution,
+  rollout, long rollout, or RL/GDPO/PPO occurred.
+- Validation:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71_bounded_tiny_dryrun_no_checkpoint/postrun_validation_report.json`
+  reports `all_passed=true`. Final train/val/test losses are
+  `4.102459907531738`, `3.34206223487854`, and
+  `3.8099067211151123`.
+- User direction:
+  User requested no further questions; proceed according to Codex conservative project method and append reports of actions taken.
+- Current next:
+  continue with bounded QA/review and conservative no-checkpoint follow-up
+  planning. Full BC training, checkpoint creation, long rollout, and
+  RL/GDPO/PPO remain outside the current executed scope.
+
+- Stage 4A-7.1 primary-label lineage audit and design QA review are complete.
+  Outputs:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71_primary_label_lineage_audit` and `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71_bc_design_qa_review`.
+- The Stage 4A-7.1 primary label requirement is now explicit and validated:
+  load `expert_action_index_primary` from the Stage 4A-7.0 BC dataset as
+  `stage4a613_uncertainty_bonus_executed_primary`. This label traces to Stage 4A-6.13 `uncertainty_bonus_composite_beta8` executed primary
+  actions. Do not recompute expert labels from lambda48.
+- Lambda48 role:
+  shadow/baseline only (`expert_action_index_lambda48_shadow`), allowed for
+  diagnostics and agreement comparisons only, not as the primary BC target.
+- Validation evidence:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71_primary_label_lineage_audit/stage4a71_primary_label_lineage_audit.json`
+  reports `primary_label_lineage_passed=true`; text validation reports
+  `violation_count=0`; Stage 4A-7.1 design QA remains passed.
+- Current next:
+  explicitly approve bounded tiny dry-run execution if desired, using the
+  updated no-checkpoint/no-lambda48-recompute approval phrase in
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71_tiny_dryrun_execution_approval_packet/exact_tiny_execution_approval_phrase.md`.
+  Full BC training, checkpoint creation, long rollout, and RL/GDPO/PPO still
+  require separate explicit approval.
+
+- Stage 4A-7.1 BC dry-run/tiny training design is complete and validated.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71_bc_dryrun_tiny_training_design`.
+- This was design-only after explicit Option A approval. No tiny training was
+  executed. No backward pass, optimizer step, model save, checkpoint creation,
+  Isaac startup, capture, map_predict, SSCNet inference, action execution,
+  rollout, long rollout, or RL/GDPO/PPO occurred.
+- Design contract:
+  use `candidate_features_model` `[30, 64, 16]` as the default input,
+  `candidate_valid_mask` `[30, 64]` for invalid-candidate masking,
+  `expert_action_index_primary` `[30]` as the only primary supervised label,
+  and masked 64-way cross entropy over model logits `[B, 64]`.
+- Recommended tiny architecture:
+  shared candidate MLP `16 -> 32 -> 16 -> 1`, applied per candidate, with
+  invalid logits masked before loss/metrics. This is for future shape/loss
+  smoke only, not a production policy.
+- Validation:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a71_bc_dryrun_tiny_training_design/design_validation_report.json`
+  reports `all_passed=true`; artifact manifest is complete and negative scope
+  is clean.
+- Recommended next:
+  review this design. If accepted, explicitly approve a bounded Stage 4A-7.1
+  tiny dry-run execution with no checkpoint by default, or choose Option B data
+  expansion. Full BC training, checkpoint creation, long rollout, and
+  RL/GDPO/PPO still require separate explicit approval.
+
+- Stage 4A-7.0 next-step approval packet is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_next_step_approval_packet`.
+- This packet records the current post-QA gate and exact approval phrases for
+  the two allowed next directions: Option A Stage 4A-7.1 BC dry-run/tiny
+  training design, or Option B a second bounded short rollout with small
+  variations.
+- Recommended default is Option A design only, but no Stage 4A-7.1 execution,
+  tiny training, second rollout, long rollout, full BC training, checkpoint
+  creation, or RL/GDPO/PPO has been approved or run.
+- Negative scope for this packet:
+  no Isaac startup, no capture, no map_predict, no SSCNet inference, no action
+  execution, no rollout, no long rollout, no training, no optimizer step, no
+  model save, no checkpoint creation, and no RL/GDPO/PPO.
+- Current next:
+  obtain explicit user approval for one bounded option. Approval phrases are
+  in
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_next_step_approval_packet/exact_approval_phrases.md`.
+
+- Stage 4A-7.0 BC dataset QA review is complete and validated.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_qa_review`.
+- This was review/audit only over the existing Stage 4A-7.0 package: no Isaac
+  startup, no capture, no map_predict, no SSCNet inference, no action
+  execution, no rollout, no long rollout, no training, no optimizer step, no
+  model save, no checkpoint creation, and no RL/GDPO/PPO.
+- Fresh validation rerun:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_qa_review/stage4a70_validation_rerun.json`
+  returned `0` with `all_passed=true`.
+- Review artifact:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_qa_review/stage4a70_dataset_qa_review.md`
+  and
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a70_bc_dataset_qa_review/stage4a70_dataset_qa_review.json`.
+- Result:
+  `qa_review_passed=true`. Required artifacts were present and non-empty, NPZ
+  and CSV counts matched the bounded 30-sample/10-start dataset, PNG QA assets
+  were readable, forbidden-field and negative-scope audits stayed clean, and
+  source/fixed USD, checkpoint, and prior datasets were unchanged.
+- Recommended next:
+  explicitly approve either Stage 4A-7.1 BC dry-run/tiny training design or a
+  second bounded short rollout with small variations. Do not jump directly to
+  long rollout, full BC training, or RL/GDPO/PPO.
 
 - Stage 4A-7.0 BC dataset design/preparation is complete and validated.
   Output:
