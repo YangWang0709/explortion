@@ -4,13 +4,12 @@ Updated: 2026-06-06
 Current:
 
 - Current next:
-  Stage 4A-7.5 no-training primary-label policy next-step packet is complete.
-  Recommended default is Option A hold/no-promotion/no-training, with Option D
-  manual review of Stage 4A-7.2 HTML/MP4/audits as the safest review gate before
-  any future policy change. Keep Stage 4A-7.0 / Stage 4A-6.13 as the only BC
-  primary source; keep Stage 4A-7.2 as candidate expansion only; keep lambda48
-  shadow/baseline only. Do not train, checkpoint, promote labels, run rollout,
-  or use RL/GDPO/PPO unless a future explicit approval phrase changes policy.
+  Stage 4A-7.6 manual topdown review packet is complete. User should manually
+  review the 30 rows in `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a76_stage4a72_manual_topdown_review_packet/stage4a72_topdown_review_index.html` and return
+  exported review JSON or edited CSV/JSON. Future Stage 4A-7.7 may import review
+  results and decide promotion policy. Do not train, checkpoint, promote labels,
+  run rollout/runtime, or use RL/GDPO/PPO unless a future explicit approval changes
+  policy.
 
 - Stage 4A-7.2 second bounded short rollout data-expansion design is complete.
   Output:

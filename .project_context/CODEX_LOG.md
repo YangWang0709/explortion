@@ -6142,3 +6142,17 @@ Stage 4A-7.5 no-training primary-label policy next-step packet result:
   design; C future primary-eligible short rollout design; D manual review gate;
   E continued training hold.
 - Exact approval phrases: `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a75_no_training_primary_label_policy_next_step_packet/exact_approval_phrases_for_next_options.md`.
+Stage 4A-7.6 Stage 4A-7.2 manual topdown review packet result:
+
+- Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a76_stage4a72_manual_topdown_review_packet`.
+- Result:
+  generated manual topdown review package for 30 Stage 4A-7.2 candidate-expansion samples,
+  including HTML review index, CSV/JSON review template, sample index, global floorplans,
+  per-start review pages, per-sample review cards, and negative-scope reports.
+- Boundary:
+  no Isaac startup, capture, map_predict, SSCNet inference, action execution, rollout,
+  long rollout, BC training, optimizer step, checkpoint, label promotion, or RL/GDPO/PPO occurred.
+- Next:
+  user manually reviews rows and returns exported review JSON/CSV; future Stage 4A-7.7 may import
+  review results and decide promotion policy.

@@ -3,6 +3,23 @@ Updated: 2026-06-06
 
 Current state:
 
+- Stage 4A-7.6 Stage 4A-7.2 manual topdown review packet is complete.
+  Output:
+  `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a76_stage4a72_manual_topdown_review_packet`.
+- Result:
+  manual topdown review packet created for all 30 Stage 4A-7.2 candidate-expansion
+  rows. Review HTML and CSV/JSON templates are available for user review.
+  Review HTML: `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a76_stage4a72_manual_topdown_review_packet/stage4a72_topdown_review_index.html`.
+  Review template: `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a76_stage4a72_manual_topdown_review_packet/stage4a72_manual_review_template.csv`.
+- Boundary:
+  Stage 4A-7.2 remains candidate expansion only; no label promotion, no training,
+  no checkpoint, no runtime, no rollout, and no RL/GDPO/PPO occurred. Lambda48
+  remains shadow/baseline only.
+- Next:
+  user manually reviews 30 rows and returns exported review JSON/CSV. Future
+  Stage 4A-7.7 may import the human review and decide promotion policy. Do not
+  train or promote until explicit future approval.
+
 - Stage 4A-7.5 no-training primary-label policy next-step packet is complete.
   Output:
   `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a75_no_training_primary_label_policy_next_step_packet`.
