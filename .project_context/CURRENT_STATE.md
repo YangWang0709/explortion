@@ -1,3 +1,16 @@
+# Current State - Stage 4A-7.6 Visual Action Story Review Upgrade Complete
+
+Stage 4A-7.6 manual topdown review now has a more intuitive action-by-action review entry point:
+`/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a76_stage4a72_manual_topdown_review_packet/stage4a72_action_story_review_index.html`.
+
+This visual upgrade adds 30 action storyboards, 30 action-arrow floorplans, and 30 camera transition panels. Each action shows current camera -> primary target on observed topdown, plus before/after RGB and RGB delta when the next capture exists. The 10 final sampled steps explicitly state that no next camera frame exists in the bounded sample.
+
+Safety remains unchanged: no Isaac startup, no new capture, no map_predict, no rollout, no BC training, no optimizer step, no checkpoint, no label promotion, and no RL/GDPO/PPO. Stage 4A-7.2 remains candidate expansion/manual review only. Primary action source remains Stage 4A-6.13 uncertainty_bonus_composite_beta8 executed primary; lambda48 remains shadow/baseline only.
+
+Validator: `/home/ubuntu22/sc_explorer_ws/sim_explorer/test_stage4a76_action_story_visual_upgrade.py` passed, log at `/home/ubuntu22/sc_explorer_ws/logs/stage4a76_action_story_visual_upgrade_test.log`.
+
+---
+
 Project: SC-Explorer SSCNet Stage 4A-6.6c-home-like-scene-v1-validation
 Updated: 2026-06-06
 

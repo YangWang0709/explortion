@@ -6156,3 +6156,12 @@ Stage 4A-7.6 Stage 4A-7.2 manual topdown review packet result:
 - Next:
   user manually reviews rows and returns exported review JSON/CSV; future Stage 4A-7.7 may import
   review results and decide promotion policy.
+
+## 2026-06-06 02:54:32 UTC - Stage 4A-7.6 action story visual upgrade
+
+- Added visual action-by-action review entry point: `/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a76_stage4a72_manual_topdown_review_packet/stage4a72_action_story_review_index.html`.
+- Generated 30 `action_review_storyboard.png`, 30 `action_arrow_floorplan.png`, and 30 `camera_transition.png` panels under per-sample directories.
+- Each storyboard shows current camera -> primary target on observed topdown plus camera before/after/RGB delta where available; 10 final sampled steps are marked as having no next camera frame.
+- Preserved scope: no Isaac startup, no new capture, no map_predict, no rollout, no BC training, no checkpoint, no label promotion, no RL/GDPO/PPO. Lambda48 remains shadow-only.
+- Validation passed with `/home/ubuntu22/sc_explorer_ws/sim_explorer/test_stage4a76_action_story_visual_upgrade.py`; log: `/home/ubuntu22/sc_explorer_ws/logs/stage4a76_action_story_visual_upgrade_test.log`.
+

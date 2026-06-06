@@ -1,3 +1,15 @@
+# TODO - Stage 4A-7.2 Visual Action Review
+
+Use the visual action story review page first:
+`/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a76_stage4a72_manual_topdown_review_packet/stage4a72_action_story_review_index.html`.
+
+For web/client review upload, include the full packet directory so relative HTML image links resolve:
+`/home/ubuntu22/sc_explorer_ws/outputs/isaac_stage4a76_stage4a72_manual_topdown_review_packet`.
+
+Reviewer should inspect each storyboard and then fill/return `stage4a72_manual_review_template.csv` or the corresponding JSON. Do not train/checkpoint/promote/run RL from this review packet unless a future goal explicitly approves that next step.
+
+---
+
 Project TODO
 Updated: 2026-06-06
 
