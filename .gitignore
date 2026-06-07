@@ -1,92 +1,44 @@
-# Python
-**pycache**/
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.ipynb_checkpoints/
+# Large or generated rollout/runtime payloads
+runs/**/logs/
+runs/**/long_rollout/
+runs/**/sensor_smoke/raw/
+runs/**/mapping_smoke/raw/
+runs/**/candidate_smoke/raw/
+runs/**/closed_loop_smoke/raw/
 
-# OS / editor
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Logs
-logs/
-*.log
-
-# Runtime outputs
-outputs/
-runs/
-wandb/
-tensorboard/
-tb_logs/
-
-# Datasets / large data
-data/
-datasets/
+# Heavy data and model artifacts
 *.npz
-*.npy
-*.h5
 *.hdf5
-*.pkl
-*.pickle
-*.zip
-*.tar
-*.tar.gz
-*.tgz
-
-# Checkpoints / model weights
-checkpoints/
-*.pth
-*.pth.tar
-*.pt
+*.h5
 *.ckpt
+*.pt
+*.pth
 *.onnx
-*.engine
-*.safetensors
-ssc_exploration/ssc_network/pretrained_models/
-
-# Isaac / USD large assets
-assets/home_like_scene_v1/current_environment/dependencies/
-assets/home_like_scene_v1/current_environment_localized/
-assets/home_like_scene_v1/current_environment_localized_defaultprim/
-*.usd
-*.usda
-*.usdc
-*.usdz
-*.fbx
-*.obj
-*.glb
-*.gltf
-*.mtl
+*.usd.tmp
+*.mp4
+*.avi
+*.mov
 *.png
 *.jpg
 *.jpeg
-*.dds
 *.exr
-*.hdr
-*.tga
-*.mp4
+*.ply
+*.pcd
+*.bag
+*.db3
 
-# Local environment and secrets
+# Local credentials and environment files
 .env
-*.env
 *.pem
-*.key
-
-# But allow small docs/manifests if explicitly added later
-!README.md
-!ARTIFACTS.md
-!ENVIRONMENT.md
-!GIT_INITIALIZATION_REPORT.md
-!git_tracked_files.txt
-!git_ignored_summary.txt
-!.project_context/
-!.project_context/*.md
+id_rsa*
+id_ed25519*
+runs/**/large_file_check.txt
+runs/**/secret_scan_limited.txt
+runs/**/phase1_scene_smoke/
+runs/**/phase1_sensor_smoke/
+runs/**/phase1_robot_pose_smoke/
+runs/**/phase1_pointcloud_smoke/
+runs/**/phase2_mapping_smoke/
+runs/**/phase3_candidate_smoke/
+runs/**/phase4_closed_loop_smoke/
+runs/**/phase5_fallback_long_rollout/*.log

@@ -1,0 +1,11 @@
+start_id,failure,action_count,final_known_ratio
+0,,16,0.9758812615955473
+1,no_positive_gain_candidate,15,0.9641311069882499
+2,no_positive_gain_candidate,15,0.9356833642547928
+3,,16,0.9622758194186766
+4,,16,0.9721706864564007
+5,no_positive_gain_candidate,10,0.6771799628942486
+6,,16,0.9771181199752629
+7,no_positive_gain_candidate,9,0.5893630179344465
+8,no_positive_gain_candidate,15,0.9307359307359307
+9,no_positive_gain_candidate,15,0.9628942486085343

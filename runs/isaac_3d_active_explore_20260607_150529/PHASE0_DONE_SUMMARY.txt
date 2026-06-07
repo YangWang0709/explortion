@@ -1,0 +1,9 @@
+PI_WORKSPACE=/home/ubuntu22/pi
+RUN_DIR=/home/ubuntu22/pi/runs/isaac_3d_active_explore_20260607_150529
+PRIMARY_USD=/home/ubuntu22/pi/building_scene.usd
+PRIMARY_USD_SHA256=11e4a3f55af816bc8b9dba3888498612295e6635e29198c6e5e40d6131bc7b8b
+ISAAC_HEADLESS_OK=true
+PRIMARY_USD_CONTEXT_OPEN=false
+PRIMARY_USD_LOAD_EXIT_CODE=134
+PHASE0_PASS=false
+BLOCKER=primary USD load crash

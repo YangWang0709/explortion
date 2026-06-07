@@ -1,0 +1,17 @@
+{
+  "average_final_known_ratio": 0.8947433518862089,
+  "candidate_count_per_step": 24,
+  "candidate_rows": 3576,
+  "fallback_scene": "scenes/minimal_indoor_smoke.usda",
+  "max_actions": 16,
+  "negative_scope": {
+    "checkpoint": false,
+    "rl": false,
+    "training": false
+  },
+  "primary_usd_used": false,
+  "start_count": 10,
+  "starts_with_failures": 6,
+  "total_action_count": 143,
+  "total_step_rows": 149
+}
